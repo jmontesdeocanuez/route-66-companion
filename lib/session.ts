@@ -6,6 +6,7 @@ export interface SessionData {
   name: string;
   email: string;
   isLoggedIn: boolean;
+  mustChangePassword: boolean;
 }
 
 export const sessionOptions = {
