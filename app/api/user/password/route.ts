@@ -51,8 +51,11 @@ export async function POST(request: NextRequest) {
 
     await prisma.user.update({
       where: { id: session.userId },
-      data: { password: hashedPassword },
+      data: { password: hashedPassword, mustChangePassword: false },
     });
+
+    session.mustChangePassword = false;
+    await session.save();
 
     return NextResponse.json({ success: true });
   } catch (error) {
