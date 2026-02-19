@@ -6,8 +6,8 @@ export default async function Home() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-6 p-4 pt-20">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">Route 66 Companion</h1>
-        <p className="text-xl text-muted-foreground">
+        <h1 className="text-4xl font-bold animate-welcome-title">Route 66 Companion</h1>
+        <p className="text-xl text-muted-foreground animate-welcome-greeting">
           Bienvenido, {session.name}!
         </p>
       </div>
