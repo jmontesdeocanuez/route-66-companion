@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Menu, Map, User, BedDouble, Plane, Binoculars, ArrowLeftRight } from "lucide-react";
+import { Menu, Map, User, BedDouble, Plane, Binoculars, ArrowLeftRight, Users } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -104,6 +104,14 @@ export function AppHeader({ userName }: AppHeaderProps) {
             >
               <ArrowLeftRight className="size-4" />
               Conversores
+            </Link>
+            <Link
+              href="/viajeros"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              <Users className="size-4" />
+              Viajeros
             </Link>
             <Link
               href="/perfil"

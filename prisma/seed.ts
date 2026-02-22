@@ -10,21 +10,27 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);
 
+const travelers = [
+  { name: "Alvaro Deniz Santana", displayName: "Álvaro", email: "alvaro@example.com", isAdmin: false },
+  { name: "Benjamin Francisco Davila Rodriguez", displayName: "Benjamín", email: "benjamin@example.com", isAdmin: false },
+  { name: "Irene Del Mar Dominguez Cabrera", displayName: "Irene", email: "irene@example.com", isAdmin: false },
+  { name: "Iris Garcia Montesdeoca", displayName: "Iris", email: "iris@example.com", isAdmin: false },
+  { name: "Juan Francisco Montesdeoca Nuez", displayName: "Jofra", email: "juan@example.com", isAdmin: true },
+  { name: "Nestor Manuel Lopez Perez", displayName: "Néstor", email: "nestor@example.com", isAdmin: false },
+  { name: "Paula Maria Montesdeoca Quintana", displayName: "Paula", email: "paula@example.com", isAdmin: false },
+];
+
 async function main() {
   const hashedPassword = await bcrypt.hash("password123", 12);
 
-  const user = await prisma.user.upsert({
-    where: { email: "test@example.com" },
-    update: { password: hashedPassword, mustChangePassword: false },
-    create: {
-      name: "Route 66 Traveler",
-      email: "test@example.com",
-      password: hashedPassword,
-      mustChangePassword: false,
-    },
-  });
-
-  console.log("Seeded user:", user.email);
+  for (const traveler of travelers) {
+    const user = await prisma.user.upsert({
+      where: { email: traveler.email },
+      update: { name: traveler.name, displayName: traveler.displayName, isAdmin: traveler.isAdmin },
+      create: { ...traveler, password: hashedPassword, mustChangePassword: false },
+    });
+    console.log("Seeded user:", user.email, `(${user.displayName})`);
+  }
 
   const tripConfig = await prisma.tripConfig.upsert({
     where: { key: "default" },

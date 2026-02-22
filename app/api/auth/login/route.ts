@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
 
     session.userId = user.id;
     session.name = user.name;
+    session.displayName = user.displayName;
     session.email = user.email;
     session.isLoggedIn = true;
     session.mustChangePassword = user.mustChangePassword;
