@@ -1,5 +1,9 @@
-import { Phone, AlertTriangle, Globe, UserRound } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Phone, AlertTriangle, Globe, UserRound, KeyRound, Loader2, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export interface Viajero {
   id: string;
@@ -25,7 +29,25 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function ViajeroCard({ viajero }: { viajero: Viajero }) {
+export function ViajeroCard({ viajero, isAdmin }: { viajero: Viajero; isAdmin?: boolean }) {
+  const [resetting, setResetting] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
+  async function handleReset() {
+    setResetting(true);
+    setResetError(null);
+    try {
+      const res = await fetch(`/api/admin/reset-password/${viajero.id}`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      setResetDone(true);
+    } catch {
+      setResetError("Error al restablecer. Inténtalo de nuevo.");
+    } finally {
+      setResetting(false);
+    }
+  }
+
   const displayName = viajero.displayName ?? viajero.name;
   const hasContact = viajero.phone || viajero.emergencyContact;
   const hasInfo = viajero.nationality;
@@ -135,6 +157,34 @@ export function ViajeroCard({ viajero }: { viajero: Viajero }) {
         {/* Fallback si no hay ningún dato adicional */}
         {!hasContact && !hasInfo && !hasRestrictions && (
           <p className="text-sm text-muted-foreground italic">Sin información adicional</p>
+        )}
+
+        {/* Acciones de administrador */}
+        {isAdmin && (
+          <>
+            <div className="border-t" />
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReset}
+                disabled={resetting || resetDone}
+                className="text-muted-foreground"
+              >
+                {resetting ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : resetDone ? (
+                  <Check className="size-3.5 text-green-600" />
+                ) : (
+                  <KeyRound className="size-3.5" />
+                )}
+                {resetDone ? "Contraseña restablecida" : "Restablecer contraseña"}
+              </Button>
+              {resetError && (
+                <p className="text-xs text-destructive">{resetError}</p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </Card>

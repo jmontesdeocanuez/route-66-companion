@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import { ViajeroCard, Viajero } from "@/components/viajero-card";
 
 export const metadata = {
@@ -6,6 +7,17 @@ export const metadata = {
 };
 
 export default async function ViajerosPage() {
+  const session = await getSession();
+
+  const currentUser = session.userId
+    ? await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { isAdmin: true },
+      })
+    : null;
+
+  const isAdmin = currentUser?.isAdmin ?? false;
+
   const viajeros = await prisma.user.findMany({
     select: {
       id: true,
@@ -35,7 +47,7 @@ export default async function ViajerosPage() {
         </div>
         <div className="space-y-4">
           {viajeros.map((v) => (
-            <ViajeroCard key={v.id} viajero={v as Viajero} />
+            <ViajeroCard key={v.id} viajero={v as Viajero} isAdmin={isAdmin} />
           ))}
         </div>
       </div>
