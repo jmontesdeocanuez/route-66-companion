@@ -1,88 +1,39 @@
-import { Hotel, HotelCard } from "@/components/hotel-card";
+import { HotelCard } from "@/components/hotel-card";
+import { prisma } from "@/lib/prisma";
+import { Card } from "@/components/ui/card";
+import { TriangleAlert } from "lucide-react";
 
 export const metadata = {
   title: "Hoteles — Route 66 Companion",
 };
 
-const hotels: Hotel[] = [
-  {
-    id: "1",
-    name: "The Buckingham Athletic Club Hotel",
-    city: "Chicago",
-    state: "Illinois",
-    address: "440 S LaSalle St, Chicago, IL 60605",
-    category: 4,
-    checkIn: "2026-06-21",
-    checkOut: "2026-06-22",
-    roomType: "Habitación Doble Deluxe",
-    pricePerNight: 189,
-    amenities: ["WiFi", "Gimnasio", "Restaurante", "Bar", "Aparcamiento"],
-    confirmationCode: "BKG-001234",
-    phone: "+1 (312) 555-0100",
-  },
-  {
-    id: "2",
-    name: "Blue Swallow Motel",
-    city: "Tucumcari",
-    state: "Nuevo México",
-    address: "815 E Route 66 Blvd, Tucumcari, NM 88401",
-    category: 2,
-    checkIn: "2026-06-25",
-    checkOut: "2026-06-27",
-    roomType: "Habitación Clásica Vintage",
-    pricePerNight: 85,
-    amenities: ["WiFi", "Parking gratuito", "Garaje cubierto"],
-    confirmationCode: "BSW-005678",
-    phone: "+1 (575) 555-0200",
-  },
-  {
-    id: "3",
-    name: "La Posada Hotel",
-    city: "Winslow",
-    state: "Arizona",
-    address: "303 E 2nd St, Winslow, AZ 86047",
-    category: 4,
-    checkIn: "2026-06-28",
-    checkOut: "2026-06-30",
-    roomType: "Suite Suroeste",
-    pricePerNight: 220,
-    amenities: ["WiFi", "Restaurante", "Jardines históricos", "Bar", "Galería de arte"],
-    confirmationCode: "LPH-009012",
-    phone: "+1 (928) 555-0300",
-  },
-  {
-    id: "4",
-    name: "Wigwam Motel",
-    city: "Holbrook",
-    state: "Arizona",
-    address: "811 W Hopi Dr, Holbrook, AZ 86025",
-    category: 2,
-    checkIn: "2026-07-01",
-    checkOut: "2026-07-02",
-    roomType: "Wigwam Clásico",
-    pricePerNight: 95,
-    amenities: ["Parking gratuito", "Piscina exterior", "WiFi"],
-    confirmationCode: "WGM-003456",
-    phone: "+1 (928) 555-0400",
-  },
-  {
-    id: "5",
-    name: "Shutters on the Beach",
-    city: "Santa Mónica",
-    state: "California",
-    address: "1 Pico Blvd, Santa Monica, CA 90405",
-    category: 5,
-    checkIn: "2026-07-04",
-    checkOut: "2026-07-07",
-    roomType: "Ocean View Suite",
-    pricePerNight: 650,
-    amenities: ["WiFi", "Spa", "Piscina", "Restaurante", "Vista al océano", "Concierge 24h"],
-    confirmationCode: "SOB-007890",
-    phone: "+1 (310) 555-0500",
-  },
-];
+const PEOPLE_COUNT = 7;
 
-export default function HotelesPage() {
+export default async function HotelesPage() {
+  const dbHotels = await prisma.hotel.findMany({ orderBy: { checkIn: "asc" } });
+
+  const hotels = dbHotels.map((h) => ({
+    id: h.id,
+    name: h.name,
+    city: h.city,
+    boardPlan: h.boardPlan,
+    rooms: h.rooms,
+    roomType: h.roomType,
+    checkIn: h.checkIn.toISOString().slice(0, 10),
+    nights: h.nights,
+    imageUrl: h.imageUrl ?? undefined,
+    resortFee: h.resortFeePerRoomPerNight
+      ? { appliesAt: "property" as const, pricePerRoomPerNight: h.resortFeePerRoomPerNight }
+      : undefined,
+  }));
+
+  const hotelsWithFee = hotels.filter((h) => h.resortFee);
+  const totalUsd = hotelsWithFee.reduce(
+    (sum, h) => sum + h.resortFee!.pricePerRoomPerNight * h.rooms * h.nights,
+    0
+  );
+  const perPerson = Math.ceil(totalUsd / PEOPLE_COUNT);
+
   return (
     <main className="min-h-svh px-4 pb-10 pt-24">
       <div className="mx-auto max-w-2xl space-y-8">
@@ -98,6 +49,46 @@ export default function HotelesPage() {
             <HotelCard key={hotel.id} hotel={hotel} />
           ))}
         </div>
+
+        {hotelsWithFee.length > 0 && (
+          <Card className="overflow-hidden p-0 gap-0">
+            <div className="flex items-center gap-2.5 bg-amber-50 dark:bg-amber-950/30 px-6 py-4 border-b border-amber-200 dark:border-amber-800">
+              <TriangleAlert className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <h2 className="font-semibold text-amber-800 dark:text-amber-300">
+                Resort fees — pago en hotel
+              </h2>
+            </div>
+            <div className="px-6 py-5 space-y-3">
+              {hotelsWithFee.map((h) => (
+                <div key={h.id} className="flex items-center justify-between text-sm">
+                  <div>
+                    <span className="font-medium">{h.city}</span>
+                    <span className="text-muted-foreground ml-2">
+                      ${h.resortFee!.pricePerRoomPerNight}/hab·noche × {h.rooms} hab × {h.nights}{" "}
+                      {h.nights === 1 ? "noche" : "noches"}
+                    </span>
+                  </div>
+                  <span className="font-semibold tabular-nums">
+                    ${h.resortFee!.pricePerRoomPerNight * h.rooms * h.nights}
+                  </span>
+                </div>
+              ))}
+
+              <div className="border-t pt-3 space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Total</span>
+                  <span className="text-lg font-bold tabular-nums">${totalUsd}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Por persona ({PEOPLE_COUNT} personas)</span>
+                  <span className="font-semibold tabular-nums text-muted-foreground">
+                    ~${perPerson}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
     </main>
   );

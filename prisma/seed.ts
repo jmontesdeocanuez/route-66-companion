@@ -37,6 +37,138 @@ async function main() {
   });
 
   console.log("Seeded trip config:", tripConfig.key, tripConfig.startDate, "→", tripConfig.endDate);
+
+  await prisma.hotel.deleteMany();
+
+  const hotels = await prisma.hotel.createMany({
+    data: [
+      {
+        name: "Warwick Allerton Chicago",
+        city: "Chicago",
+        boardPlan: "Solo alojamiento",
+        rooms: 4,
+        roomType: "Habitación doble 1 cama",
+        checkIn: new Date("2026-03-21"),
+        nights: 2,
+        imageUrl: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/a4/c5/f3/historic-hotel.jpg?w=900&h=-1&s=1",
+        resortFeePerRoomPerNight: 30,
+      },
+      {
+        name: "La Quinta Inn & Suites by Wyndham St Louis Route 66",
+        city: "Saint Louis",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "1 King Bed Non-Smoking",
+        checkIn: new Date("2026-03-23"),
+        nights: 1,
+        imageUrl: "https://www.wyndhamhotels.com/content/dam/property-images/en-us/lq/us/mo/st-louis/53782/53782_exterior_view_4.jpg",
+      },
+      {
+        name: "Baymont by Wyndham Springfield I-44",
+        city: "Springfield (MO)",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "1 King Bed Non-Smoking",
+        checkIn: new Date("2026-03-24"),
+        nights: 1,
+        imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max500/288865511.jpg?k=78441f9b3667ee6ca59dd90402d4d869d8539edd030529250aee54af5d396b30&o=&hp=1",
+      },
+      {
+        name: "Super 8 Oklahoma City",
+        city: "Oklahoma City",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "1 King Bed Non-Smoking",
+        checkIn: new Date("2026-03-25"),
+        nights: 1,
+        imageUrl: "https://www.wyndhamhotels.com/content/dam/property-images/en-us/se/us/ok/oklahoma-city/14851/14851_exterior_view_2.jpg?downsize=720:*",
+      },
+      {
+        name: "Microtel Inn & Suites by Wyndham Amarillo",
+        city: "Amarillo",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "2 Queen Beds Non-Smoking",
+        checkIn: new Date("2026-03-26"),
+        nights: 1,
+        imageUrl: "https://www.wyndhamhotels.com/content/dam/property-images/en-us/mt/us/tx/amarillo/29278/29278_exterior_day_1.jpg",
+      },
+      {
+        name: "Super 8 by Wyndham Albuquerque Downtown Area",
+        city: "Albuquerque",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "King Bed Non-Smoking",
+        checkIn: new Date("2026-03-27"),
+        nights: 1,
+        imageUrl: "https://www.wyndhamhotels.com/content/dam/property-images/en-us/se/us/nm/albuquerque/59222/59222_exterior_view_1.jpg?downsize=720:*",
+      },
+      {
+        name: "Holiday Inn Resort The Squire at Grand Canyon",
+        city: "Grand Canyon",
+        boardPlan: "Solo alojamiento",
+        rooms: 4,
+        roomType: "2 Queen Standard",
+        checkIn: new Date("2026-03-28"),
+        nights: 2,
+        imageUrl: "https://digital.ihg.com/is/image/ihg/holiday-inn-resort-grand-canyon-village-10244493375-2x1",
+        resortFeePerRoomPerNight: 25,
+      },
+      {
+        name: "Gouldings Lodge",
+        city: "Monument Valley",
+        boardPlan: "Solo alojamiento",
+        rooms: 4,
+        roomType: "Habitación con vistas",
+        checkIn: new Date("2026-03-30"),
+        nights: 1,
+        imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/432653189.jpg?k=d84e6ef311e938214dad4045d56202efe37cec2b58a8124aeb7c4a33844d8ef1&o=",
+      },
+      {
+        name: "Super 8 by Wyndham Page/Lake Powell",
+        city: "Page",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "2 Queen Beds Non-Smoking",
+        checkIn: new Date("2026-03-31"),
+        nights: 1,
+        imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/137131230.jpg?k=27885fb9a5d16c06f44974289cfc2d2e9d20526a616d651e732fd8179e8f5053&o=",
+      },
+      {
+        name: "Bumbleberry Inn",
+        city: "Springdale",
+        boardPlan: "Alojamiento y desayuno",
+        rooms: 4,
+        roomType: "Doble Economy",
+        checkIn: new Date("2026-04-01"),
+        nights: 1,
+        imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/207883556.jpg?k=92dc144c3d06e7c0fbbfc654632b5224912c96a869edc0d0bd1ed4318fdd3470&o=",
+      },
+      {
+        name: "Paris Las Vegas Casino Resort",
+        city: "Las Vegas",
+        boardPlan: "Solo alojamiento",
+        rooms: 4,
+        roomType: "Room type assigned on arrival",
+        checkIn: new Date("2026-04-02"),
+        nights: 2,
+        imageUrl: "https://images.trvl-media.com/lodging/1000000/210000/200800/200710/c9e8bc65.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+        resortFeePerRoomPerNight: 55,
+      },
+      {
+        name: "Hollywood Historic Hotel",
+        city: "Los Angeles",
+        boardPlan: "Solo alojamiento",
+        rooms: 4,
+        roomType: "Double Deluxe cama Queen Size",
+        checkIn: new Date("2026-04-04"),
+        nights: 3,
+        imageUrl: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/10/01/e8/ec/exterior-of-hotel.jpg?w=900&h=-1&s=1",
+      },
+    ],
+  });
+
+  console.log(`Seeded ${hotels.count} hotels`);
 }
 
 main()
