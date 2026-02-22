@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Menu, Map, User, BedDouble, Plane, Binoculars, ArrowLeftRight, Users } from "lucide-react";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 
 interface AppHeaderProps {
   userName: string;
+  avatar: string | null;
 }
 
 function getInitials(name: string): string {
@@ -25,9 +26,19 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function AppHeader({ userName }: AppHeaderProps) {
+export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [avatar, setAvatar] = useState(initialAvatar);
   const router = useRouter();
+
+  useEffect(() => {
+    function handleAvatarUpdate(e: Event) {
+      const url = (e as CustomEvent<string>).detail;
+      setAvatar(url);
+    }
+    window.addEventListener("avatar-updated", handleAvatarUpdate);
+    return () => window.removeEventListener("avatar-updated", handleAvatarUpdate);
+  }, []);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -43,9 +54,18 @@ export function AppHeader({ userName }: AppHeaderProps) {
             Route 66 <span className="text-muted-foreground font-normal">Companion</span>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold select-none">
-              {getInitials(userName)}
-            </div>
+            <Link
+              href="/perfil"
+              className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold select-none overflow-hidden ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label="Ver perfil"
+            >
+              {avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatar} alt={userName} className="size-8 object-cover" />
+              ) : (
+                getInitials(userName)
+              )}
+            </Link>
             <Button
               variant="ghost"
               size="icon"

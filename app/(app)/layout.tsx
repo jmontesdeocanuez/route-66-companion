@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { AppHeader } from "@/components/app-header";
 
 export default async function AppLayout({
@@ -13,9 +14,14 @@ export default async function AppLayout({
     redirect("/login");
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { avatar: true },
+  });
+
   return (
     <>
-      <AppHeader userName={session.name} />
+      <AppHeader userName={session.name} avatar={user?.avatar ?? null} />
       {children}
     </>
   );

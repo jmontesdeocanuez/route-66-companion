@@ -6,7 +6,10 @@ export const metadata = {
 };
 
 export default async function HotelesPage() {
-  const dbHotels = await prisma.hotel.findMany({ orderBy: { checkIn: "asc" } });
+  const [dbHotels, peopleCount] = await Promise.all([
+    prisma.hotel.findMany({ orderBy: { checkIn: "asc" } }),
+    prisma.user.count(),
+  ]);
 
   const hotels = dbHotels.map((h) => ({
     id: h.id,
@@ -33,7 +36,7 @@ export default async function HotelesPage() {
           </p>
         </div>
 
-        <HotelsList hotels={hotels} />
+        <HotelsList hotels={hotels} peopleCount={peopleCount} />
       </div>
     </main>
   );

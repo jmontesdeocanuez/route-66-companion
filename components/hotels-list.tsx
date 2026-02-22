@@ -8,10 +8,9 @@ import { TriangleAlert } from "lucide-react";
 import { Hotel, HotelCard } from "@/components/hotel-card";
 import { HotelFormDialog } from "@/components/hotel-form-dialog";
 
-const PEOPLE_COUNT = 7;
-
 interface HotelsListProps {
   hotels: Hotel[];
+  peopleCount: number;
 }
 
 function addDays(dateStr: string, days: number): string {
@@ -20,7 +19,7 @@ function addDays(dateStr: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-export function HotelsList({ hotels }: HotelsListProps) {
+export function HotelsList({ hotels, peopleCount }: HotelsListProps) {
   const router = useRouter();
 
   const today = new Date().toISOString().slice(0, 10);
@@ -32,7 +31,7 @@ export function HotelsList({ hotels }: HotelsListProps) {
     (sum, h) => sum + h.resortFee!.pricePerRoomPerNight * h.rooms * h.nights,
     0
   );
-  const perPerson = Math.ceil(totalUsd / PEOPLE_COUNT);
+  const perPerson = Math.ceil(totalUsd / peopleCount);
 
   function refresh() {
     router.refresh();
@@ -118,7 +117,7 @@ export function HotelsList({ hotels }: HotelsListProps) {
                 <span className="text-lg font-bold tabular-nums">${totalUsd}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Por persona ({PEOPLE_COUNT} personas)</span>
+                <span className="text-muted-foreground">Por persona ({peopleCount} personas)</span>
                 <span className="font-semibold tabular-nums text-muted-foreground">
                   ~${perPerson}
                 </span>
