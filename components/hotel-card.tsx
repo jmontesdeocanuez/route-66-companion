@@ -34,7 +34,7 @@ function addDays(dateStr: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-export function HotelCard({ hotel }: { hotel: Hotel }) {
+export function HotelCard({ hotel, editTrigger, past }: { hotel: Hotel; editTrigger?: React.ReactNode; past?: boolean }) {
   const checkOut = addDays(hotel.checkIn, hotel.nights);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name} ${hotel.city}`)}`;
   const resortFeeTotal = hotel.resortFee
@@ -45,7 +45,10 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
     <Card className="overflow-hidden p-0 gap-0">
       {/* Image */}
       {hotel.imageUrl && (
-        <div className="h-80 w-full overflow-hidden">
+        <div
+          className="h-80 w-full overflow-hidden"
+          style={past ? { filter: "grayscale(100%)", WebkitFilter: "grayscale(100%)" } : undefined}
+        >
           <img
             src={hotel.imageUrl}
             alt={hotel.name}
@@ -64,15 +67,18 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
             <MapPin className="size-3.5 shrink-0" />
             <span className="text-sm">{hotel.city}</span>
           </div>
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-primary-foreground/60 hover:text-primary-foreground transition-colors"
-          >
-            <ExternalLink className="size-3.5" />
-            Maps
-          </a>
+          <div className="flex items-center gap-1">
+            {editTrigger}
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+            >
+              <ExternalLink className="size-3.5" />
+              Maps
+            </a>
+          </div>
         </div>
       </div>
 
