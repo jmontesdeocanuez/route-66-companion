@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Route 66 Companion
 
-## Getting Started
+App privada para organizar un viaje por la Ruta 66 (junio–julio 2026). Centraliza la información del viaje: vuelos, hoteles y excursiones, con acceso autenticado por invitación.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router) + **TypeScript**
+- **Tailwind CSS v4** + **shadcn/ui**
+- **Prisma v7** con **Supabase** (PostgreSQL)
+- **iron-session** para autenticación por cookie cifrada
+- Desplegable en **Vercel**
+
+## Páginas
+
+| Ruta | Descripción |
+|------|-------------|
+| `/login` | Acceso con email y contraseña |
+| `/cambiar-contrasena` | Cambio obligatorio en el primer login |
+| `/` | Bienvenida con nombre del usuario |
+| `/vuelos` | Vuelos reservados (LPA ↔ MAD ↔ ORD / LAX) |
+| `/hoteles` | Hoteles con detalles de reserva por etapa |
+| `/excursiones` | Actividades: helicóptero Gran Cañón, Monument Valley, Antelope Canyon, Disneyland... |
+
+## Desarrollo local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # rellenar DATABASE_URL, DIRECT_URL, SHADOW_DATABASE_URL, SESSION_SECRET
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Para crear el usuario de prueba:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx tsx prisma/seed.ts
+# email: test@example.com / password: password123
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Build
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm build   # prisma generate + migrate deploy + next build
+```
