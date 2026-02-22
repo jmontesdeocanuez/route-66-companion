@@ -1,6 +1,6 @@
 # Route 66 Companion
 
-App privada para organizar un viaje por la Ruta 66 (junio–julio 2026). Centraliza la información del viaje: vuelos, hoteles y excursiones, con acceso autenticado por invitación.
+App privada para organizar un viaje por la Ruta 66. Centraliza la información del viaje: vuelos, hoteles y excursiones, con acceso autenticado por invitación.
 
 ## Stack
 

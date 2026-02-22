@@ -1,16 +1,18 @@
 import { getSession } from "@/lib/session";
+import { getTripConfig } from "@/lib/trip-config";
+import { TripCountdown } from "@/components/trip-countdown";
 
 export default async function Home() {
-  const session = await getSession();
+  const [session, tripConfig] = await Promise.all([getSession(), getTripConfig()]);
 
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-6 p-4 pt-20">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold animate-welcome-title">Route 66 Companion</h1>
-        <p className="text-xl text-muted-foreground animate-welcome-greeting">
-          Bienvenido, {session.name}!
+    <main className="flex flex-col gap-10 p-6 pt-24">
+      <div className="space-y-1 animate-welcome-greeting">
+        <p className="text-xl text-muted-foreground text-center">
+          Bienvenido, <span className="text-foreground font-semibold">{session.name}</span>
         </p>
       </div>
+      <TripCountdown startDate={tripConfig.startDate} endDate={tripConfig.endDate} />
     </main>
   );
 }

@@ -25,6 +25,18 @@ async function main() {
   });
 
   console.log("Seeded user:", user.email);
+
+  const tripConfig = await prisma.tripConfig.upsert({
+    where: { key: "default" },
+    update: {},
+    create: {
+      key: "default",
+      startDate: new Date("2026-03-20T00:00:00"),
+      endDate: new Date("2026-04-08T00:00:00"),
+    },
+  });
+
+  console.log("Seeded trip config:", tripConfig.key, tripConfig.startDate, "→", tripConfig.endDate);
 }
 
 main()
