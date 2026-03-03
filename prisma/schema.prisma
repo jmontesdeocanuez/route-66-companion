@@ -47,8 +47,9 @@ model Hotel {
 
   resortFeePerRoomPerNight Int?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  itineraryItems ItineraryItem[]
 }
 
 model Flight {
@@ -71,6 +72,39 @@ model Flight {
   passengers         Int
   sortOrder          Int      @default(0)
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  itineraryItems ItineraryItem[]
+}
+
+model Stop {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  location    String?
+  time        String?
+  imageUrl    String?
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  itineraryItems ItineraryItem[]
+}
+
+model ItineraryItem {
+  id        String   @id @default(cuid())
+  date      DateTime
+  sortOrder Int      @default(0)
+  completed Boolean  @default(false)
+
+  type      String
+  flightId  String?
+  hotelId   String?
+  stopId    String?
+
+  flight    Flight? @relation(fields: [flightId], references: [id])
+  hotel     Hotel?  @relation(fields: [hotelId], references: [id])
+  stop      Stop?   @relation(fields: [stopId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
