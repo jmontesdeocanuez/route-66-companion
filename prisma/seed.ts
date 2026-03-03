@@ -175,6 +175,91 @@ async function main() {
   });
 
   console.log(`Seeded ${hotels.count} hotels`);
+
+  await prisma.flight.deleteMany();
+
+  const flights = await prisma.flight.createMany({
+    data: [
+      {
+        airline: "Binter Canarias",
+        flightNumber: "NT 102",
+        flightIata: "NT102",
+        originCode: "LPA",
+        originCity: "Las Palmas de Gran Canaria",
+        originCountry: "España",
+        destinationCode: "MAD",
+        destinationCity: "Madrid",
+        destinationCountry: "España",
+        departureDate: "2026-06-19",
+        departureTime: "07:30",
+        arrivalDate: "2026-06-19",
+        arrivalTime: "10:45",
+        duration: "3h 15m",
+        cabinClass: "Turista",
+        passengers: 2,
+        sortOrder: 1,
+      },
+      {
+        airline: "Iberia",
+        flightNumber: "IB 6251",
+        flightIata: "IB6251",
+        originCode: "MAD",
+        originCity: "Madrid",
+        originCountry: "España",
+        destinationCode: "ORD",
+        destinationCity: "Chicago",
+        destinationCountry: "Estados Unidos",
+        departureDate: "2026-06-20",
+        departureTime: "13:15",
+        arrivalDate: "2026-06-20",
+        arrivalTime: "17:05",
+        duration: "9h 50m",
+        cabinClass: "Business",
+        passengers: 2,
+        sortOrder: 2,
+      },
+      {
+        airline: "American Airlines",
+        flightNumber: "AA 238",
+        flightIata: "AA238",
+        originCode: "LAX",
+        originCity: "Los Ángeles",
+        originCountry: "Estados Unidos",
+        destinationCode: "MAD",
+        destinationCity: "Madrid",
+        destinationCountry: "España",
+        departureDate: "2026-07-09",
+        departureTime: "18:30",
+        arrivalDate: "2026-07-10",
+        arrivalTime: "14:55",
+        duration: "11h 25m",
+        cabinClass: "Turista Premium",
+        passengers: 2,
+        sortOrder: 3,
+      },
+      {
+        airline: "Iberia",
+        flightNumber: "IB 6830",
+        flightIata: "IB6830",
+        originCode: "MAD",
+        originCity: "Madrid",
+        originCountry: "España",
+        destinationCode: "LPA",
+        destinationCity: "Las Palmas de Gran Canaria",
+        destinationCountry: "España",
+        departureDate: "2026-07-12",
+        departureTime: "20:00",
+        arrivalDate: "2026-07-12",
+        arrivalTime: "23:20",
+        duration: "3h 20m",
+        cabinClass: "Turista",
+        passengers: 2,
+        sortOrder: 4,
+      },
+    ],
+  });
+
+  console.log(`Seeded ${flights.count} flights`);
 }
 
 main()
