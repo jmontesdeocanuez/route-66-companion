@@ -8,11 +8,12 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { completed, sortOrder } = body;
+    const { completed, sortOrder, date } = body;
 
     const data: Record<string, unknown> = {};
     if (completed !== undefined) data.completed = completed;
     if (sortOrder !== undefined) data.sortOrder = sortOrder;
+    if (date !== undefined) data.date = new Date(date);
 
     const item = await prisma.itineraryItem.update({
       where: { id },

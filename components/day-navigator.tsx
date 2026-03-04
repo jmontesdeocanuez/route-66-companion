@@ -2,55 +2,62 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { format, addDays, differenceInCalendarDays } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 interface DayNavigatorProps {
-  currentDate: Date;
+  dates: Date[];
   startDate: Date;
-  endDate: Date;
-  onDateChange: (date: Date) => void;
+  isFirst: boolean;
+  isLast: boolean;
+  onPrev: () => void;
+  onNext: () => void;
 }
 
-export function DayNavigator({ currentDate, startDate, endDate, onDateChange }: DayNavigatorProps) {
-  const dayNumber = differenceInCalendarDays(currentDate, startDate) + 1;
-  const isFirst = differenceInCalendarDays(currentDate, startDate) <= 0;
-  const isLast = differenceInCalendarDays(currentDate, endDate) >= 0;
+function formatDayLabel(date: Date): string {
+  const str = format(date, "EEEE d 'de' MMMM", { locale: es });
+  const [weekday, ...rest] = str.split(" ");
+  const capitalized = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+  return `${capitalized}, ${rest.join(" ")}`;
+}
 
+export function DayNavigator({ dates, startDate, isFirst, isLast, onPrev, onNext }: DayNavigatorProps) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center gap-2">
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onDateChange(addDays(currentDate, -1))}
+        onClick={onPrev}
         disabled={isFirst}
-        aria-label="Día anterior"
+        aria-label="Días anteriores"
+        className="shrink-0"
       >
         <ChevronLeft className="size-5" />
       </Button>
 
-      <div className="text-center">
-        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Día {dayNumber}
-        </p>
-        <p className="text-base font-medium">
-          {(() => {
-            const str = format(currentDate, "EEEE d 'de' MMMM", { locale: es });
-            // Capitalize only the first letter, leave rest as-is (date-fns/es returns lowercase)
-            const [weekday, ...rest] = str.split(" ");
-            const capitalized = weekday.charAt(0).toUpperCase() + weekday.slice(1);
-            // Insert comma after weekday: "Viernes, 20 de marzo"
-            return `${capitalized}, ${rest.join(" ")}`;
-          })()}
-        </p>
+      <div className="flex flex-1 gap-2">
+        {dates.map((date) => {
+          const dayNumber = differenceInCalendarDays(date, startDate) + 1;
+          return (
+            <div key={date.toISOString()} className="flex-1 text-center min-w-0">
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Día {dayNumber}
+              </p>
+              <p className="text-sm font-medium truncate">
+                {formatDayLabel(date)}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onDateChange(addDays(currentDate, 1))}
+        onClick={onNext}
         disabled={isLast}
-        aria-label="Día siguiente"
+        aria-label="Días siguientes"
+        className="shrink-0"
       >
         <ChevronRight className="size-5" />
       </Button>

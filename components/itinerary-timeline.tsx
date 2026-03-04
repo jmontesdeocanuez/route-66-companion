@@ -23,12 +23,14 @@ import { MapPin } from "lucide-react";
 interface SortableItemProps {
   item: ItineraryItemData;
   editMode: boolean;
+  tripStartDate: Date;
+  tripEndDate: Date;
   onToggleComplete?: (id: string, completed: boolean) => void;
   onDelete?: (id: string) => void;
   onEditStop?: (id: string, values: StopFormValues) => Promise<void>;
 }
 
-function SortableItem({ item, editMode, onToggleComplete, onDelete, onEditStop }: SortableItemProps) {
+function SortableItem({ item, editMode, tripStartDate, tripEndDate, onToggleComplete, onDelete, onEditStop }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
     disabled: !editMode,
@@ -46,6 +48,8 @@ function SortableItem({ item, editMode, onToggleComplete, onDelete, onEditStop }
       <ItineraryCard
         item={item}
         editMode={editMode}
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
         dragHandleProps={{ ...attributes, ...listeners } as React.HTMLAttributes<HTMLButtonElement>}
         onToggleComplete={onToggleComplete}
         onDelete={onDelete}
@@ -58,6 +62,8 @@ function SortableItem({ item, editMode, onToggleComplete, onDelete, onEditStop }
 interface ItineraryTimelineProps {
   items: ItineraryItemData[];
   editMode: boolean;
+  tripStartDate: Date;
+  tripEndDate: Date;
   onReorder: (items: ItineraryItemData[]) => void;
   onToggleComplete: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
@@ -67,6 +73,8 @@ interface ItineraryTimelineProps {
 export function ItineraryTimeline({
   items,
   editMode,
+  tripStartDate,
+  tripEndDate,
   onReorder,
   onToggleComplete,
   onDelete,
@@ -113,6 +121,8 @@ export function ItineraryTimeline({
                 <SortableItem
                   item={item}
                   editMode={editMode}
+                  tripStartDate={tripStartDate}
+                  tripEndDate={tripEndDate}
                   onToggleComplete={onToggleComplete}
                   onDelete={onDelete}
                   onEditStop={onEditStop}

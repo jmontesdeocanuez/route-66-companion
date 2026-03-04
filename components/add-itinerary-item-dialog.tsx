@@ -22,6 +22,8 @@ interface AddItineraryItemDialogProps {
   flights: Flight[];
   hotels: Hotel[];
   onItemAdded: (item: ItineraryItemData) => void;
+  tripStartDate?: Date;
+  tripEndDate?: Date;
 }
 
 const TYPE_OPTIONS: { type: ItineraryItemType; label: string; icon: React.ReactNode }[] = [
@@ -37,6 +39,8 @@ export function AddItineraryItemDialog({
   flights,
   hotels,
   onItemAdded,
+  tripStartDate,
+  tripEndDate,
 }: AddItineraryItemDialogProps) {
   const [step, setStep] = useState<Step>("type-select");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,10 +92,12 @@ export function AddItineraryItemDialog({
   }
 
   async function handleStopSubmit(values: StopFormValues) {
+    const { date: selectedDate, ...stopValues } = values;
+    const date = selectedDate ? new Date(selectedDate).toISOString() : currentDate.toISOString();
     await addItem({
-      date: currentDate.toISOString(),
+      date,
       type: "stop",
-      stop: values,
+      stop: stopValues,
     });
   }
 
@@ -194,7 +200,13 @@ export function AddItineraryItemDialog({
 
         {step === "stop-form" && (
           <div className="pt-2">
-            <StopForm onSubmit={handleStopSubmit} isSubmitting={isSubmitting} />
+            <StopForm
+              onSubmit={handleStopSubmit}
+              isSubmitting={isSubmitting}
+              defaultValues={{ date: currentDate.toISOString().slice(0, 10) }}
+              tripStartDate={tripStartDate}
+              tripEndDate={tripEndDate}
+            />
           </div>
         )}
       </DialogContent>

@@ -40,14 +40,16 @@ export default async function Home() {
         </p>
       </div>
       <TripCountdown startDate={tripConfig.startDate} endDate={tripConfig.endDate} />
-      <Itinerary
-        startDate={tripConfig.startDate}
-        endDate={tripConfig.endDate}
-        initialItems={initialItems}
-        initialDate={defaultDate}
-        flights={flights}
-        hotels={hotels}
-      />
+      <div className="animate-itinerary">
+        <Itinerary
+          startDate={tripConfig.startDate}
+          endDate={tripConfig.endDate}
+          initialItems={initialItems}
+          initialDate={defaultDate}
+          flights={flights}
+          hotels={hotels}
+        />
+      </div>
     </main>
   );
 }
