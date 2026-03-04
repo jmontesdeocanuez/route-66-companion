@@ -108,3 +108,30 @@ model ItineraryItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model RentalCar {
+  id           String   @id @default(cuid())
+  licensePlate String
+  model        String
+  imageUrl     String?
+  pickupKm     Int?
+  returnKm     Int?
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  refills   FuelRefill[]
+}
+
+model FuelRefill {
+  id            String    @id @default(cuid())
+  carId         String
+  car           RentalCar @relation(fields: [carId], references: [id], onDelete: Cascade)
+  date          String
+  dollars       Float
+  pricePerLiter Float
+  location      String
+  km            Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
