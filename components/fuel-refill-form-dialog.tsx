@@ -42,46 +42,64 @@ const refillSchema = z.object({
 
 type RefillFormValues = z.infer<typeof refillSchema>;
 
-interface FuelRefillFormDialogProps {
-  carId: string;
-  trigger: React.ReactNode;
-  onSuccess: () => void;
+export interface FuelRefill {
+  id: string;
+  date: string;
+  location: string;
+  dollars: number;
+  pricePerLiter: number;
+  km: number | null;
 }
 
-export function FuelRefillFormDialog({ carId, trigger, onSuccess }: FuelRefillFormDialogProps) {
+interface FuelRefillFormDialogProps {
+  carId: string;
+  refill?: FuelRefill;
+  trigger: React.ReactNode;
+  onSuccess: (refill: FuelRefill) => void;
+}
+
+export function FuelRefillFormDialog({ carId, refill, trigger, onSuccess }: FuelRefillFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const isEditing = !!refill;
 
   const form = useForm<RefillFormValues>({
     resolver: zodResolver(refillSchema),
     defaultValues: {
-      date: "",
-      location: "",
-      dollars: "" as unknown as number,
-      pricePerLiter: "" as unknown as number,
-      km: "",
+      date: refill?.date ?? format(new Date(), "yyyy-MM-dd"),
+      location: refill?.location ?? "",
+      dollars: refill?.dollars ?? ("" as unknown as number),
+      pricePerLiter: refill?.pricePerLiter ?? ("" as unknown as number),
+      km: refill?.km ?? "",
     },
   });
 
   async function onSubmit(values: RefillFormValues) {
     setServerError(null);
 
-    const response = await fetch(`/api/rental-car/${carId}/refills`, {
-      method: "POST",
+    const payload = {
+      date: values.date,
+      location: values.location,
+      dollars: values.dollars,
+      pricePerLiter: values.pricePerLiter,
+      km: values.km || null,
+    };
+
+    const url = isEditing
+      ? `/api/rental-car/${carId}/refills/${refill.id}`
+      : `/api/rental-car/${carId}/refills`;
+    const method = isEditing ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date: values.date,
-        location: values.location,
-        dollars: values.dollars,
-        pricePerLiter: values.pricePerLiter,
-        km: values.km || null,
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (response.ok) {
+      const data = await response.json();
       setOpen(false);
-      form.reset();
-      onSuccess();
+      onSuccess(data);
     } else {
       const data = await response.json();
       setServerError(data.error ?? "Ha ocurrido un error. Inténtalo de nuevo.");
@@ -91,7 +109,13 @@ export function FuelRefillFormDialog({ carId, trigger, onSuccess }: FuelRefillFo
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
-      form.reset();
+      form.reset({
+        date: refill?.date ?? format(new Date(), "yyyy-MM-dd"),
+        location: refill?.location ?? "",
+        dollars: refill?.dollars ?? ("" as unknown as number),
+        pricePerLiter: refill?.pricePerLiter ?? ("" as unknown as number),
+        km: refill?.km ?? "",
+      });
       setServerError(null);
     }
   }
@@ -102,7 +126,7 @@ export function FuelRefillFormDialog({ carId, trigger, onSuccess }: FuelRefillFo
 
       <DialogContent className="w-full max-w-md">
         <DialogHeader>
-          <DialogTitle>Añadir repostaje</DialogTitle>
+          <DialogTitle>{isEditing ? "Editar repostaje" : "Añadir repostaje"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -215,7 +239,11 @@ export function FuelRefillFormDialog({ carId, trigger, onSuccess }: FuelRefillFo
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Guardando..." : "Añadir repostaje"}
+              {form.formState.isSubmitting
+                ? "Guardando..."
+                : isEditing
+                  ? "Guardar cambios"
+                  : "Añadir repostaje"}
             </Button>
           </form>
         </Form>

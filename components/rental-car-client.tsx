@@ -8,16 +8,7 @@ import { Car, Fuel, Plus, Pencil, Trash2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RentalCarFormDialog, RentalCarData } from "@/components/rental-car-form-dialog";
-import { FuelRefillFormDialog } from "@/components/fuel-refill-form-dialog";
-
-interface FuelRefill {
-  id: string;
-  date: string;
-  location: string;
-  dollars: number;
-  pricePerLiter: number;
-  km: number | null;
-}
+import { FuelRefillFormDialog, FuelRefill } from "@/components/fuel-refill-form-dialog";
 
 interface RentalCarClientProps {
   car: (RentalCarData & { refills: FuelRefill[] }) | null;
@@ -34,6 +25,15 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
 
   function refresh() {
     router.refresh();
+  }
+
+  function handleCarSuccess(updatedCar: RentalCarData | null) {
+    if (updatedCar === null) {
+      setCar(null);
+      router.refresh();
+    } else {
+      setCar((prev) => ({ ...updatedCar, refills: prev?.refills ?? [] }));
+    }
   }
 
   async function handleSaveReturnKm() {
@@ -54,11 +54,24 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
   async function handleDeleteRefill(refillId: string) {
     if (!car) return;
     setDeletingRefillId(refillId);
-    await fetch(`/api/rental-car/${car.id}/refills/${refillId}`, {
+    const response = await fetch(`/api/rental-car/${car.id}/refills/${refillId}`, {
       method: "DELETE",
     });
     setDeletingRefillId(null);
-    refresh();
+    if (response.ok) {
+      setCar((prev) => prev ? { ...prev, refills: prev.refills.filter((r) => r.id !== refillId) } : prev);
+    }
+  }
+
+  function handleRefillSuccess(refill: FuelRefill) {
+    setCar((prev) => {
+      if (!prev) return prev;
+      const exists = prev.refills.some((r) => r.id === refill.id);
+      const refills = exists
+        ? prev.refills.map((r) => r.id === refill.id ? refill : r)
+        : [...prev.refills, refill];
+      return { ...prev, refills };
+    });
   }
 
   // Calculations on refills sorted by date
@@ -103,7 +116,7 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
               Registrar coche
             </Button>
           }
-          onSuccess={refresh}
+          onSuccess={handleCarSuccess}
         />
       </div>
     );
@@ -134,7 +147,7 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
                   <Pencil className="size-4" />
                 </Button>
               }
-              onSuccess={refresh}
+              onSuccess={handleCarSuccess}
             />
           </div>
 
@@ -213,7 +226,7 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
                 Añadir
               </Button>
             }
-            onSuccess={refresh}
+            onSuccess={handleRefillSuccess}
           />
         </div>
 
@@ -236,6 +249,7 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
                     <th className="px-3 py-2.5 text-right font-medium text-muted-foreground whitespace-nowrap">Dólares</th>
                     <th className="px-3 py-2.5 text-right font-medium text-muted-foreground whitespace-nowrap">Acum. $</th>
                     <th className="px-3 py-2.5 text-right font-medium text-muted-foreground whitespace-nowrap">Acum. L</th>
+                    <th className="px-3 py-2.5 w-8"></th>
                     <th className="px-3 py-2.5 w-8"></th>
                   </tr>
                 </thead>
@@ -270,6 +284,21 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
                         {row.accLiters.toFixed(1)} L
                       </td>
                       <td className="px-3 py-2.5">
+                        <FuelRefillFormDialog
+                          carId={car.id}
+                          refill={{ id: row.id, date: row.date, location: row.location, dollars: row.dollars, pricePerLiter: row.pricePerLiter, km: row.km }}
+                          trigger={
+                            <button
+                              aria-label="Editar repostaje"
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              <Pencil className="size-4" />
+                            </button>
+                          }
+                          onSuccess={handleRefillSuccess}
+                        />
+                      </td>
+                      <td className="px-3 py-2.5">
                         <button
                           onClick={() => handleDeleteRefill(row.id)}
                           disabled={deletingRefillId === row.id}
@@ -290,6 +319,7 @@ export function RentalCarClient({ car: initialCar }: RentalCarClientProps) {
                     <td className="px-3 py-2.5 text-right">${totalDollars.toFixed(2)}</td>
                     <td className="px-3 py-2.5 text-right"></td>
                     <td className="px-3 py-2.5 text-right">{totalLiters.toFixed(1)} L</td>
+                    <td></td>
                     <td></td>
                   </tr>
                 </tfoot>

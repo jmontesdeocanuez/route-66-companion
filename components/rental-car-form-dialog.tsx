@@ -43,7 +43,7 @@ export interface RentalCarData {
 interface RentalCarFormDialogProps {
   car?: RentalCarData;
   trigger: React.ReactNode;
-  onSuccess: () => void;
+  onSuccess: (car: RentalCarData | null) => void;
 }
 
 export function RentalCarFormDialog({ car, trigger, onSuccess }: RentalCarFormDialogProps) {
@@ -83,8 +83,9 @@ export function RentalCarFormDialog({ car, trigger, onSuccess }: RentalCarFormDi
     });
 
     if (response.ok) {
+      const data = await response.json();
       setOpen(false);
-      onSuccess();
+      onSuccess(data);
     } else {
       const data = await response.json();
       setServerError(data.error ?? "Ha ocurrido un error. Inténtalo de nuevo.");
@@ -98,7 +99,7 @@ export function RentalCarFormDialog({ car, trigger, onSuccess }: RentalCarFormDi
     setIsDeleting(false);
     if (response.ok) {
       setOpen(false);
-      onSuccess();
+      onSuccess(null);
     } else {
       setServerError("No se ha podido borrar el coche. Inténtalo de nuevo.");
       setConfirmDelete(false);
