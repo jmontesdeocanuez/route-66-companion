@@ -126,14 +126,6 @@ export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
               Mi Equipaje
             </Link>
             <Link
-              href="/conversores"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
-            >
-              <ArrowLeftRight className="size-4" />
-              Conversores
-            </Link>
-            <Link
               href="/coche-alquiler"
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
@@ -148,6 +140,14 @@ export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
             >
               <Users className="size-4" />
               Viajeros
+            </Link>
+            <Link
+              href="/conversores"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              <ArrowLeftRight className="size-4" />
+              Conversores
             </Link>
             <Link
               href="/perfil"

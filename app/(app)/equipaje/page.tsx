@@ -5,7 +5,7 @@ import { UserLuggageItem } from "@/components/user-luggage-item-form-dialog";
 import { EquipajeContentClient } from "@/components/equipaje-content-client";
 
 export const metadata = {
-  title: "Mi Equipaje — Route 66 Companion",
+  title: "Equipaje — Route 66 Companion",
 };
 
 export default async function EquipajePage() {
@@ -65,7 +65,7 @@ export default async function EquipajePage() {
     <main className="min-h-svh px-4 pb-10 pt-24">
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold">Mi Equipaje</h1>
+          <h1 className="text-3xl font-bold">Equipaje</h1>
           <p className="text-muted-foreground">
             Tu lista personal para el viaje
           </p>
