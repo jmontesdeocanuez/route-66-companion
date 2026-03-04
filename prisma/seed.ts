@@ -275,6 +275,52 @@ async function main() {
   });
 
   console.log(`Seeded ${flights.count} flights`);
+
+  await prisma.luggageItem.deleteMany();
+
+  const luggageItems = await prisma.luggageItem.createMany({
+    data: [
+      // Ropa
+      { name: "Bragas / Calzoncillos", category: "Ropa", description: "Mínimo 18 unidades recomendadas", sortOrder: 10 },
+      { name: "Calcetines", category: "Ropa", description: "18 pares (o 9 si reutilizas)", sortOrder: 20 },
+      { name: "Zapatillas de deporte (training)", category: "Ropa", sortOrder: 30 },
+      { name: "Zapatillas de deporte (salir)", category: "Ropa", sortOrder: 40 },
+      { name: "Chanclas / Sandalias", category: "Ropa", sortOrder: 50 },
+      { name: "Vaqueros", category: "Ropa", description: "3 unidades", sortOrder: 60 },
+      { name: "Pantalón de chándal", category: "Ropa", description: "3 unidades", sortOrder: 70 },
+      { name: "Pantalón corto / deportivo", category: "Ropa", description: "1 unidad", sortOrder: 80 },
+      { name: "Camisetas", category: "Ropa", description: "15 unidades", sortOrder: 90 },
+      { name: "Camisa de salir / Polo", category: "Ropa", description: "1 unidad", sortOrder: 100 },
+      { name: "Sudadera", category: "Ropa", description: "3 unidades", sortOrder: 110 },
+      { name: "Plumas / Abrigo de plumas", category: "Ropa", description: "1 unidad", sortOrder: 120 },
+      { name: "Chaqueta vaquera", category: "Ropa", description: "1 unidad", sortOrder: 130 },
+      { name: "Vestido", category: "Ropa", sortOrder: 140 },
+      { name: "Bañador", category: "Ropa", sortOrder: 150 },
+      { name: "Pijama", category: "Ropa", sortOrder: 160 },
+      { name: "Cinturón", category: "Ropa", sortOrder: 170 },
+      // Accesorios
+      { name: "Mochila", category: "Accesorios", sortOrder: 210 },
+      { name: "Gorras / Sombreros / Accesorios", category: "Accesorios", description: "Gorras, sombreros y accesorios varios (Poly Pocket)", sortOrder: 220 },
+      // Higiene
+      { name: "Neceser", category: "Higiene", sortOrder: 310 },
+      { name: "Cepillo de dientes", category: "Higiene", sortOrder: 320 },
+      { name: "Kit de costura", category: "Higiene", sortOrder: 330 },
+      { name: "Polvos de talco", category: "Higiene", sortOrder: 340 },
+      // Medicamentos
+      { name: "Medicación varia", category: "Medicamentos", sortOrder: 410 },
+      { name: "Bepanthen", category: "Medicamentos", sortOrder: 420 },
+      { name: "Tiritas", category: "Medicamentos", sortOrder: 430 },
+      { name: "Compeed (ampollas)", category: "Medicamentos", sortOrder: 440 },
+      // Electrónica
+      { name: "Batería externa (powerbank)", category: "Electrónica", sortOrder: 510 },
+      { name: "Adaptador de corriente para EE.UU.", category: "Electrónica", sortOrder: 520 },
+      { name: "Regleta / Ladrón", category: "Electrónica", sortOrder: 530 },
+      { name: "Cerradura de puerta portátil", category: "Electrónica", sortOrder: 540 },
+      { name: "Auriculares", category: "Electrónica", sortOrder: 550 },
+    ],
+  });
+
+  console.log(`Seeded ${luggageItems.count} luggage items`);
 }
 
 main()

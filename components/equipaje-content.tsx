@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Plus, Pencil, X, Trash2, PackageOpen } from "lucide-react";
+import { Plus, Pencil, X, Trash2, PackageOpen, RotateCcw, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LuggageItem, LuggageItemFormDialog } from "@/components/luggage-item-form-dialog";
 import { UserLuggageItem, UserLuggageItemFormDialog } from "@/components/user-luggage-item-form-dialog";
@@ -26,20 +26,30 @@ function groupByCategory<T extends { category: string }>(items: T[]): Record<str
   }, {});
 }
 
-function CategoryBadge({ category }: { category: string }) {
-  return (
-    <span className="inline-block rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-      {category}
-    </span>
-  );
-}
-
 export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
+  // Optimistic packed state: maps item id → packed boolean
+  const [packedOverrides, setPackedOverrides] = useState<Record<string, boolean>>({});
 
   function refresh() {
     router.refresh();
+  }
+
+  function isPacked(item: UserLuggageItem) {
+    return item.id in packedOverrides ? packedOverrides[item.id] : item.packed;
+  }
+
+  async function togglePacked(item: UserLuggageItem) {
+    // Optimistic update
+    const next = !isPacked(item);
+    setPackedOverrides((prev) => ({ ...prev, [item.id]: next }));
+    const res = await fetch(`/api/equipaje/user-items/${item.id}`, { method: "PATCH" });
+    if (!res.ok) {
+      // Revert on error
+      setPackedOverrides((prev) => ({ ...prev, [item.id]: !next }));
+    }
   }
 
   // Visible reference items: those with no user interaction yet
@@ -56,11 +66,23 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
     refresh();
   }
 
+  async function resetDiscarded() {
+    setIsResetting(true);
+    await fetch("/api/equipaje/user-items", { method: "DELETE" });
+    setIsResetting(false);
+    refresh();
+  }
+
   async function removeFromMyList(userItem: UserLuggageItem) {
     setLoadingId(userItem.id);
     await fetch(`/api/equipaje/user-items/${userItem.id}`, { method: "DELETE" });
     setLoadingId(null);
     refresh();
+  }
+
+  // Sort items within a category: unpacked first, packed last
+  function sortItems(items: UserLuggageItem[]) {
+    return [...items].sort((a, b) => Number(isPacked(a)) - Number(isPacked(b)));
   }
 
   const myGrouped = groupByCategory(myItems);
@@ -105,45 +127,59 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
                   {category}
                 </h3>
                 <div className="space-y-2">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-start gap-3 rounded-lg border bg-card p-3"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium leading-snug">{item.name}</p>
-                        {item.description && (
-                          <p className="text-sm text-muted-foreground mt-0.5">{item.description}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <UserLuggageItemFormDialog
-                          userItem={item}
-                          trigger={
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="size-8 text-muted-foreground hover:text-foreground"
-                              aria-label="Editar"
-                            >
-                              <Pencil className="size-3.5" />
-                            </Button>
-                          }
-                          onSuccess={refresh}
-                        />
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="size-8 text-muted-foreground hover:text-destructive"
-                          aria-label="Quitar de mi lista"
-                          disabled={loadingId === item.id}
-                          onClick={() => removeFromMyList(item)}
+                  {sortItems(items).map((item) => {
+                    const packed = isPacked(item);
+                    return (
+                      <div
+                        key={item.id}
+                        className={`flex items-start gap-3 rounded-lg border bg-card p-3 transition-opacity ${packed ? "opacity-40" : ""}`}
+                      >
+                        <button
+                          onClick={() => togglePacked(item)}
+                          aria-label={packed ? "Marcar como no guardado" : "Marcar como guardado"}
+                          className={`mt-0.5 shrink-0 size-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            packed
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-muted-foreground/40 hover:border-primary"
+                          }`}
                         >
-                          <Trash2 className="size-3.5" />
-                        </Button>
+                          {packed && <Check className="size-3" strokeWidth={3} />}
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-medium leading-snug ${packed ? "line-through" : ""}`}>{item.name}</p>
+                          {item.description && (
+                            <p className="text-sm text-muted-foreground mt-0.5">{item.description}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <UserLuggageItemFormDialog
+                            userItem={item}
+                            trigger={
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="size-8 text-muted-foreground hover:text-foreground"
+                                aria-label="Editar"
+                              >
+                                <Pencil className="size-3.5" />
+                              </Button>
+                            }
+                            onSuccess={refresh}
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="size-8 text-muted-foreground hover:text-destructive"
+                            aria-label="Quitar de mi lista"
+                            disabled={loadingId === item.id}
+                            onClick={() => removeFromMyList(item)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -203,7 +239,6 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        {/* Add to my list (with optional edit before adding) */}
                         <UserLuggageItemFormDialog
                           referenceItem={item}
                           trigger={
@@ -218,7 +253,6 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
                           }
                           onSuccess={refresh}
                         />
-                        {/* Discard from reference (no dialog needed) */}
                         <Button
                           size="icon"
                           variant="ghost"
@@ -229,7 +263,6 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
                         >
                           <X className="size-4" />
                         </Button>
-                        {/* Admin: edit/delete reference item */}
                         {isAdmin && (
                           <LuggageItemFormDialog
                             item={item}
@@ -252,6 +285,21 @@ export function EquipajeContent({ referenceItems, myItems, isAdmin }: Props) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {referenceItems.some((i) => i.userStatus === "discarded") && (
+          <div className="pt-2 flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground text-xs gap-1.5"
+              disabled={isResetting}
+              onClick={resetDiscarded}
+            >
+              <RotateCcw className="size-3.5" />
+              {isResetting ? "Restableciendo..." : "Restablecer artículos descartados"}
+            </Button>
           </div>
         )}
       </section>

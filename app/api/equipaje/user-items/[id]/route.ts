@@ -42,6 +42,39 @@ export async function PUT(
   }
 }
 
+// PATCH: Toggle packed status
+export async function PATCH(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getSession();
+    if (!session.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const existing = await prisma.userLuggageItem.findFirst({
+      where: { id, userId: session.userId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const updated = await prisma.userLuggageItem.update({
+      where: { id },
+      data: { packed: !existing.packed },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Error toggling packed status:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 // DELETE: Remove a personal item
 // - If it came from a reference item (luggageItemId set): sets status to "discarded"
 //   so the reference item stays hidden for this user

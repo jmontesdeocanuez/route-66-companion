@@ -87,3 +87,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+// DELETE: Remove all discarded reference items for the current user (reset reference list)
+export async function DELETE() {
+  try {
+    const session = await getSession();
+    if (!session.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { count } = await prisma.userLuggageItem.deleteMany({
+      where: { userId: session.userId, luggageItemId: { not: null }, status: "discarded" },
+    });
+
+    return NextResponse.json({ count });
+  } catch (error) {
+    console.error("Error resetting discarded items:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

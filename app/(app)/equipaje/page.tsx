@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { EquipajeContent, ReferenceItemWithStatus } from "@/components/equipaje-content";
+import { ReferenceItemWithStatus } from "@/components/equipaje-content";
 import { UserLuggageItem } from "@/components/user-luggage-item-form-dialog";
+import { EquipajeContentClient } from "@/components/equipaje-content-client";
 
 export const metadata = {
   title: "Mi Equipaje — Route 66 Companion",
@@ -57,6 +58,7 @@ export default async function EquipajePage() {
       category: i.category,
       description: i.description,
       status: i.status,
+      packed: i.packed,
     }));
 
   return (
@@ -68,7 +70,7 @@ export default async function EquipajePage() {
             Tu lista personal para el viaje
           </p>
         </div>
-        <EquipajeContent
+        <EquipajeContentClient
           referenceItems={referenceItems}
           myItems={myItems}
           isAdmin={isAdmin}

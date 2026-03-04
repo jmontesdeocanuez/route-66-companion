@@ -21,14 +21,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { LUGGAGE_CATEGORIES, LuggageItem } from "@/components/luggage-item-form-dialog";
+import { LuggageItem } from "@/components/luggage-item-form-dialog";
+import { CategorySelect } from "@/components/category-select";
 
 export interface UserLuggageItem {
   id: string;
@@ -37,6 +31,7 @@ export interface UserLuggageItem {
   category: string;
   description: string | null;
   status: string;
+  packed: boolean;
 }
 
 const schema = z.object({
@@ -164,18 +159,9 @@ export function UserLuggageItemFormDialog({ userItem, referenceItem, trigger, on
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoría</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona una categoría" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {LUGGAGE_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <CategorySelect value={field.value} onChange={field.onChange} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

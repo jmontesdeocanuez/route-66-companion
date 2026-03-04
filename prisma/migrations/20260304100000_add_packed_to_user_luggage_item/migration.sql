@@ -1,0 +1,1 @@
+ALTER TABLE "UserLuggageItem" ADD COLUMN "packed" BOOLEAN NOT NULL DEFAULT false;

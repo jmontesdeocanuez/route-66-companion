@@ -44,6 +44,7 @@ model UserLuggageItem {
   userId        String
   luggageItemId String?
   status        String       // "added" | "discarded"
+  packed        Boolean      @default(false)
   name          String
   category      String
   description   String?
