@@ -38,11 +38,14 @@ export function DayNavigator({ dates, startDate, isFirst, isLast, onPrev, onNext
       <div className="flex flex-1 gap-2">
         {dates.map((date) => {
           const dayNumber = differenceInCalendarDays(date, startDate) + 1;
+          const isToday = differenceInCalendarDays(date, new Date()) === 0;
           return (
             <div key={date.toISOString()} className="flex-1 text-center min-w-0">
-              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                Día {dayNumber}
-              </p>
+              {!isToday && (
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Día {dayNumber}
+                </p>
+              )}
               <p className="text-sm font-medium truncate">
                 {formatDayLabel(date)}
               </p>

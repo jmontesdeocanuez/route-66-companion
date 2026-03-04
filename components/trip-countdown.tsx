@@ -114,8 +114,13 @@ export function TripCountdown({ startDate, endDate }: TripCountdownProps) {
       {isToday && (
         <p className="max-w-sm text-base text-muted-foreground leading-relaxed">
           Miles de kilómetros de asfalto, desiertos infinitos y atardeceres que no tienen nombre os esperan.
-          La Route 66 es vuestra. Disfrutad cada curva, cada parada y cada momento.{" "}
+          La ruta 66 es vuestra. Disfrutad cada curva, cada parada y cada momento.{" "}
           <span className="text-foreground font-semibold">¡Buen viaje!</span>
+        </p>
+      )}
+      {!inProgress && !isToday && (
+        <p className="text-[11px] text-muted-foreground/60 tracking-wide">
+          {startDate.toLocaleString("es-ES", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}
         </p>
       )}
     </div>

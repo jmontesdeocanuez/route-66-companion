@@ -16,7 +16,7 @@ const MESSAGES = [
   { emoji: "🗺️", text: "¡Misión cumplida! Guardad fuerzas para seguir descubriendo esta ruta legendaria." },
   { emoji: "☕", text: "Día completado. Ahora toca relajarse juntos con algo rico y revivir los momentos del día." },
   { emoji: "🌄", text: "¡Increíble jornada! El horizonte de mañana os espera. Por hoy, a descansar." },
-  { emoji: "🎯", text: "¡Bullseye! Todo el plan del día completado. Sois una máquina." },
+  { emoji: "🎯", text: "¡Diablos! Todo el plan del día completado. Sois una máquina." },
   { emoji: "🦅", text: "Voláis alto, viajeros. Día completo. Ahora aterrizad y descansad." },
   { emoji: "🏜️", text: "El desierto os ha visto hoy. Mañana volverá a veros, pero descansad primero." },
   { emoji: "🚗", text: "Motor apagado por hoy. ¡Menudo día! A descansar, que el coche también lo necesita." },
