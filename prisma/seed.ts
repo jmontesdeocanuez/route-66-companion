@@ -321,6 +321,77 @@ async function main() {
   });
 
   console.log(`Seeded ${luggageItems.count} luggage items`);
+
+  await prisma.excursion.deleteMany();
+
+  const excursions = await prisma.excursion.createMany({
+    data: [
+      {
+        id: "excursion-helicopter-gran-canyon-20260329",
+        emoji: "🚁",
+        name: "Excursión en helicóptero al Gran Cañón (North Canyon Tour)",
+        date: "2026-03-29",
+        time: "09:05",
+        meetingTime: "08:35",
+        meetingPoint: "3568 Airport Rd, Grand Canyon Village, Arizona 86023",
+        participants: 4,
+        duration: "25–30 minutos",
+        details: ["Vuelo en helicóptero modelo EcoStar Helicopter HGG-1."],
+        notes: ["Los pasajeros deberán presentarse con antelación en el punto de encuentro."],
+        nonRefundable: false,
+        sortOrder: 0,
+      },
+      {
+        id: "excursion-dreamcatcher-monument-valley-20260330",
+        emoji: "🪶",
+        name: "Excursión de atrapasueños en Monument Valley",
+        date: "2026-03-30",
+        time: "16:30",
+        participants: 7,
+        details: [],
+        notes: [],
+        nonRefundable: false,
+        sortOrder: 1,
+      },
+      {
+        id: "excursion-antelope-canyon-20260331",
+        emoji: "🏜️",
+        name: "Tour por el Cañón del Antílope Superior (Upper Antelope Canyon)",
+        date: "2026-03-31",
+        time: "15:45",
+        meetingPoint: "Tse Bighanilini Tours, AZ-98 Milepost 299.8, Page, AZ 86040, Estados Unidos",
+        participants: 7,
+        details: [
+          "El recorrido incluye servicio de traslado desde el punto de entrada.",
+          "Tour impartido en inglés.",
+        ],
+        notes: ["Es indispensable llegar al menos 45 minutos antes de la hora de entrada asignada."],
+        nonRefundable: true,
+        sortOrder: 2,
+      },
+      {
+        id: "excursion-disneyland-20260406",
+        emoji: "🎢",
+        name: "Día en Disneyland Park y Disney California Adventure",
+        date: "2026-04-06",
+        time: "Horario oficial de apertura y cierre de ambos parques",
+        participants: 2,
+        details: [
+          "Entrada tipo Park Hopper con Multi Pass Lightning Lane.",
+          "Acceso el mismo día a ambos parques: Disneyland Park y Disney California Adventure.",
+          "Incluye uso del sistema Lightning Lane para acceder más rápido a atracciones seleccionadas.",
+        ],
+        notes: [
+          "Se recomienda llegar temprano para aprovechar al máximo el acceso Park Hopper.",
+          "Reservar las franjas Lightning Lane desde la app oficial en cuanto sea posible.",
+        ],
+        nonRefundable: false,
+        sortOrder: 3,
+      },
+    ],
+  });
+
+  console.log(`Seeded ${excursions.count} excursions`);
 }
 
 main()

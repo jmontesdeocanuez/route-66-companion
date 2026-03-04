@@ -123,7 +123,7 @@ export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               <Luggage className="size-4" />
-              Mi Equipaje
+              Equipaje
             </Link>
             <Link
               href="/coche-alquiler"
