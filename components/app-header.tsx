@@ -48,10 +48,18 @@ export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-full items-center justify-between px-4">
-          <Link href="/" className="font-semibold text-lg">
-            Route 66 <span className="text-muted-foreground font-normal">Companion</span>
+          <Link href="/" className="flex items-center gap-2.5 select-none">
+            {/* Route 66 shield badge */}
+            <span className="inline-flex flex-col items-center justify-center bg-primary text-primary-foreground rounded-[3px] w-8 h-9 shrink-0 shadow-sm">
+              <span className="text-[7px] font-bold tracking-[0.18em] leading-none mt-0.5">US</span>
+              <span className="text-base font-black leading-none font-display">66</span>
+            </span>
+            <span className="font-semibold text-lg leading-none">
+              Route <span className="text-primary font-black font-display">66</span>{" "}
+              <span className="text-muted-foreground font-normal">Companion</span>
+            </span>
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -81,7 +89,13 @@ export function AppHeader({ userName, avatar: initialAvatar }: AppHeaderProps) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" showCloseButton={false} className="w-72 sm:max-w-72 p-0">
           <SheetHeader className="h-16 flex-row items-center justify-between border-b px-4 py-0">
-            <SheetTitle>Menú</SheetTitle>
+            <SheetTitle className="flex items-center gap-2">
+              <span className="inline-flex flex-col items-center justify-center bg-primary text-primary-foreground rounded-[3px] w-6 h-7 shrink-0">
+                <span className="text-[6px] font-bold tracking-[0.15em] leading-none">US</span>
+                <span className="text-[11px] font-black leading-none font-display">66</span>
+              </span>
+              <span className="font-display font-bold tracking-wide text-base">Menú</span>
+            </SheetTitle>
           </SheetHeader>
 
           <nav className="flex flex-col gap-1 p-3">

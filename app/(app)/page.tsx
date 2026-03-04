@@ -34,10 +34,11 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col gap-10 p-6 pt-24">
-      <div className="space-y-1 animate-welcome-greeting">
-        <p className="text-xl text-muted-foreground text-center">
+      <div className="space-y-3 animate-welcome-greeting text-center">
+        <p className="text-xl text-muted-foreground">
           Bienvenido, <span className="text-foreground font-semibold">{session.displayName ?? session.name}</span>
         </p>
+        <div className="road-separator max-w-xs mx-auto" />
       </div>
       <TripCountdown startDate={tripConfig.startDate} endDate={tripConfig.endDate} />
       <Itinerary

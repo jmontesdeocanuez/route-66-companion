@@ -8,8 +8,8 @@ export function ConversoresContent() {
   return (
     <main className="min-h-svh px-4 pb-10 pt-24">
       <div className="mx-auto max-w-2xl space-y-8">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">Conversores</h1>
+        <div className="page-header space-y-1">
+          <h1 className="text-3xl font-bold font-display tracking-wide">Conversores</h1>
           <p className="text-muted-foreground">
             Conversiones útiles para el viaje a Estados Unidos
           </p>

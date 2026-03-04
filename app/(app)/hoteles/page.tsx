@@ -29,8 +29,8 @@ export default async function HotelesPage() {
   return (
     <main className="min-h-svh px-4 pb-10 pt-24">
       <div className="mx-auto max-w-2xl space-y-8">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">Hoteles</h1>
+        <div className="page-header space-y-1">
+          <h1 className="text-3xl font-bold font-display tracking-wide">Hoteles</h1>
           <p className="text-muted-foreground">
             Alojamientos reservados a lo largo de la Ruta 66
           </p>
