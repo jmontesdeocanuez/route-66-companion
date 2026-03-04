@@ -26,17 +26,20 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export function ActivityCard({ activity }: { activity: Activity }) {
+export function ActivityCard({ activity, editTrigger }: { activity: Activity; editTrigger?: React.ReactNode }) {
   return (
     <Card className="overflow-hidden p-0 gap-0">
       {/* Header */}
       <div className="bg-primary px-6 py-5">
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none mt-0.5 shrink-0">{activity.emoji}</span>
-          <div>
-            <h2 className="text-primary-foreground text-xl font-bold leading-tight">
-              {activity.name}
-            </h2>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h2 className="text-primary-foreground text-xl font-bold leading-tight">
+                {activity.name}
+              </h2>
+              {editTrigger && <div className="shrink-0">{editTrigger}</div>}
+            </div>
             <div className="mt-2 flex items-center gap-1.5 text-primary-foreground/70">
               <Calendar className="size-3.5 shrink-0" />
               <span className="text-sm capitalize">{formatDate(activity.date)}</span>
