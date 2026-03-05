@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plane, BedDouble, MapPin, Clock, CheckCircle2, Circle, GripVertical, Trash2, Pencil, Search } from "lucide-react";
+import { Plane, BedDouble, MapPin, Clock, CheckCircle2, Circle, GripVertical, Trash2, Pencil, Search, ExternalLink, StickyNote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { StopForm, type StopFormValues } from "@/components/stop-form";
 import { FlightCard } from "@/components/flight-card";
 import { HotelCard } from "@/components/hotel-card";
+import { ActivityCard } from "@/components/activity-card";
 import type { ItineraryItemData } from "@/lib/itinerary-types";
 
 interface ItineraryCardProps {
@@ -20,6 +21,7 @@ interface ItineraryCardProps {
   onToggleComplete?: (id: string, completed: boolean) => void;
   onDelete?: (id: string) => void;
   onEditStop?: (id: string, values: StopFormValues) => Promise<void>;
+  onEditNote?: (id: string, noteText: string) => Promise<void>;
 }
 
 function FlightSummary({ item }: { item: ItineraryItemData }) {
@@ -49,7 +51,7 @@ function HotelSummary({ item }: { item: ItineraryItemData }) {
         <BedDouble className="size-4 text-primary" />
       </div>
       <div className="min-w-0">
-        <p className="font-semibold text-sm leading-tight truncate">{hotel.name}</p>
+        <p className="font-semibold text-sm leading-tight break-words">{hotel.name}</p>
         <p className="text-xs text-muted-foreground">
           {hotel.city} · {hotel.nights} {hotel.nights === 1 ? "noche" : "noches"}
         </p>
@@ -66,7 +68,7 @@ function StopSummary({ item }: { item: ItineraryItemData }) {
         <MapPin className="size-4 text-primary" />
       </div>
       <div className="min-w-0">
-        <p className="font-semibold text-sm leading-tight truncate">{stop.title}</p>
+        <p className="font-semibold text-sm leading-tight break-words">{stop.title}</p>
         <p className="text-xs text-muted-foreground truncate">
           {[stop.location, stop.time ? <span key="time" className="inline-flex items-center gap-0.5"><Clock className="size-2.5" />{stop.time}</span> : null]
             .filter(Boolean)
@@ -78,13 +80,23 @@ function StopSummary({ item }: { item: ItineraryItemData }) {
           {!stop.location && !stop.time && (stop.description ?? "Parada")}
         </p>
       </div>
-      {stop.imageUrl && (
-        <img
-          src={stop.imageUrl}
-          alt={stop.title}
-          className="ml-auto size-10 shrink-0 rounded-md object-cover"
-        />
-      )}
+    </div>
+  );
+}
+
+function ExcursionSummary({ item }: { item: ItineraryItemData }) {
+  const excursion = item.excursion!;
+  return (
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg">
+        {excursion.emoji}
+      </div>
+      <div className="min-w-0">
+        <p className="font-semibold text-sm leading-tight break-words">{excursion.name}</p>
+        <p className="text-xs text-muted-foreground truncate">
+          {excursion.time}{excursion.meetingPoint ? ` · ${excursion.meetingPoint}` : ""}
+        </p>
+      </div>
     </div>
   );
 }
@@ -98,10 +110,13 @@ export function ItineraryCard({
   onToggleComplete,
   onDelete,
   onEditStop,
+  onEditNote,
 }: ItineraryCardProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteText, setNoteText] = useState(item.noteText ?? "");
 
   async function handleStopEdit(values: StopFormValues) {
     if (!onEditStop) return;
@@ -111,7 +126,82 @@ export function ItineraryCard({
     setEditDialogOpen(false);
   }
 
+  async function handleNoteEdit() {
+    if (!onEditNote) return;
+    setIsSubmitting(true);
+    await onEditNote(item.id, noteText);
+    setIsSubmitting(false);
+    setEditingNote(false);
+  }
+
   const stop = item.stop;
+
+  // Notes render differently — no card chrome
+  if (item.type === "note") {
+    return (
+      <div className="flex items-start gap-2 px-1 py-1">
+        {editMode && (
+          <button
+            className="shrink-0 mt-0.5 cursor-grab touch-none text-muted-foreground/50 hover:text-muted-foreground"
+            aria-label="Arrastrar"
+            {...dragHandleProps}
+          >
+            <GripVertical className="size-4" />
+          </button>
+        )}
+        <StickyNote className="size-3.5 shrink-0 mt-0.5 text-muted-foreground/60" />
+        {editingNote ? (
+          <div className="flex-1 flex flex-col gap-2">
+            <textarea
+              className="w-full rounded-md border bg-background px-2 py-1 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+              rows={3}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleNoteEdit} disabled={isSubmitting}>
+                Guardar
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => { setNoteText(item.noteText ?? ""); setEditingNote(false); }}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p className="flex-1 text-sm text-muted-foreground leading-snug break-words whitespace-pre-wrap">
+            {item.noteText}
+          </p>
+        )}
+        {editMode && !editingNote && (
+          <>
+            {onEditNote && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 size-7 text-muted-foreground"
+                onClick={() => setEditingNote(true)}
+                aria-label="Editar nota"
+              >
+                <Pencil className="size-3.5" />
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => onDelete(item.id)}
+                aria-label="Eliminar nota"
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -131,10 +221,14 @@ export function ItineraryCard({
           </button>
         )}
 
-        <div className="flex-1 min-w-0">
+        <div
+          className={cn("flex-1 min-w-0", !editMode && "cursor-pointer")}
+          onClick={!editMode ? () => setDetailSheetOpen(true) : undefined}
+        >
           {item.type === "flight" && item.flight && <FlightSummary item={item} />}
           {item.type === "hotel" && item.hotel && <HotelSummary item={item} />}
           {item.type === "stop" && stop && <StopSummary item={item} />}
+          {item.type === "excursion" && item.excursion && <ExcursionSummary item={item} />}
         </div>
 
         {!editMode && (
@@ -203,6 +297,7 @@ export function ItineraryCard({
                 title: stop.title,
                 description: stop.description ?? "",
                 location: stop.location ?? "",
+                mapsQuery: stop.mapsQuery ?? "",
                 time: stop.time ?? "",
                 imageUrl: stop.imageUrl ?? "",
                 date: new Date(item.date).toISOString().slice(0, 10),
@@ -240,7 +335,7 @@ export function ItineraryCard({
                 <img
                   src={stop.imageUrl}
                   alt={stop.title}
-                  className="h-56 w-full object-cover"
+                  className="h-72 w-full object-cover"
                 />
               )}
               <div className="bg-primary px-6 py-5">
@@ -250,6 +345,17 @@ export function ItineraryCard({
                     <MapPin className="size-3.5 shrink-0" />
                     <span className="text-sm">{stop.location}</span>
                   </div>
+                )}
+                {stop.mapsQuery && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stop.mapsQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium text-primary-foreground hover:bg-primary-foreground/25 transition-colors"
+                  >
+                    <ExternalLink className="size-3" />
+                    Ver en Maps
+                  </a>
                 )}
               </div>
               <div className="px-6 py-5 space-y-3">
@@ -263,6 +369,16 @@ export function ItineraryCard({
                   <p className="text-sm text-muted-foreground">{stop.description}</p>
                 )}
               </div>
+            </div>
+          )}
+          {item.type === "excursion" && item.excursion && (
+            <div className="pb-6">
+              <ActivityCard activity={{
+                ...item.excursion,
+                meetingTime: item.excursion.meetingTime ?? undefined,
+                meetingPoint: item.excursion.meetingPoint ?? undefined,
+                duration: item.excursion.duration ?? undefined,
+              }} />
             </div>
           )}
         </SheetContent>

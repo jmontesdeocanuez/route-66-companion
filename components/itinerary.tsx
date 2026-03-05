@@ -10,7 +10,7 @@ import { ItineraryDayComplete } from "@/components/itinerary-day-complete";
 import { AddItineraryItemDialog } from "@/components/add-itinerary-item-dialog";
 import type { ItineraryItemData } from "@/lib/itinerary-types";
 import type { StopFormValues } from "@/components/stop-form";
-import type { Flight, Hotel } from "@/app/generated/prisma/client";
+import type { Flight, Hotel, Excursion } from "@/app/generated/prisma/client";
 
 interface ItineraryProps {
   startDate: Date;
@@ -19,6 +19,7 @@ interface ItineraryProps {
   initialDate: Date;
   flights: Flight[];
   hotels: Hotel[];
+  excursions: Excursion[];
 }
 
 function useVisibleDays(): number {
@@ -52,7 +53,7 @@ interface DayColumn {
   isLoading: boolean;
 }
 
-export function Itinerary({ startDate, endDate, initialItems, initialDate, flights, hotels }: ItineraryProps) {
+export function Itinerary({ startDate, endDate, initialItems, initialDate, flights, hotels, excursions }: ItineraryProps) {
   const visibleDays = useVisibleDays();
   const [anchorDate, setAnchorDate] = useState<Date>(initialDate);
   const [columns, setColumns] = useState<DayColumn[]>([
@@ -182,6 +183,24 @@ export function Itinerary({ startDate, endDate, initialItems, initialDate, fligh
     }
   }, []);
 
+  const handleEditNote = useCallback(async (itemId: string, noteText: string) => {
+    try {
+      await fetch(`/api/itinerary/${itemId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ noteText }),
+      });
+      setColumns((prev) =>
+        prev.map((col) => ({
+          ...col,
+          items: col.items.map((i) => (i.id === itemId ? { ...i, noteText } : i)),
+        }))
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   const handleEditStop = useCallback(async (itemId: string, values: StopFormValues) => {
     let stopId: string | null = null;
     let originalItem: ItineraryItemData | undefined;
@@ -295,7 +314,8 @@ export function Itinerary({ startDate, endDate, initialItems, initialDate, fligh
       <div className={`grid gap-6 ${visibleDays === 1 ? "" : visibleDays === 2 ? "grid-cols-2" : "grid-cols-4"}`}>
         {columns.map((col) => {
           const dayNumber = differenceInCalendarDays(col.date, startDate) + 1;
-          const allCompleted = col.items.length > 0 && col.items.every((i) => i.completed);
+          const nonNoteItems = col.items.filter((i) => i.type !== "note");
+          const allCompleted = nonNoteItems.length > 0 && nonNoteItems.every((i) => i.completed);
 
           return (
             <div key={col.date.toISOString()} className="space-y-4">
@@ -314,6 +334,7 @@ export function Itinerary({ startDate, endDate, initialItems, initialDate, fligh
                     onToggleComplete={handleToggleComplete}
                     onDelete={handleDelete}
                     onEditStop={handleEditStop}
+                    onEditNote={handleEditNote}
                   />
                   {allCompleted && !editMode && (
                     <ItineraryDayComplete
@@ -349,6 +370,7 @@ export function Itinerary({ startDate, endDate, initialItems, initialDate, fligh
         currentDate={addDialogDate}
         flights={flights}
         hotels={hotels}
+        excursions={excursions}
         onItemAdded={handleItemAdded}
         tripStartDate={startDate}
         tripEndDate={endDate}

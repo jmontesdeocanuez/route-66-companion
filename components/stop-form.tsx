@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v3";
@@ -24,6 +25,7 @@ const stopSchema = z.object({
   title: z.string().min(1, "El título es obligatorio"),
   description: z.string().optional(),
   location: z.string().optional(),
+  mapsQuery: z.string().optional(),
   time: z.string().optional(),
   imageUrl: z.string().optional(),
   date: z.string().optional(),
@@ -41,12 +43,35 @@ interface StopFormProps {
 }
 
 export function StopForm({ onSubmit, isSubmitting, defaultValues, submitLabel, tripStartDate, tripEndDate }: StopFormProps) {
+  const [jsonInput, setJsonInput] = useState("");
+  const [jsonError, setJsonError] = useState("");
+
+  function handleJsonPaste(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    const value = e.target.value;
+    setJsonInput(value);
+    if (!value.trim()) { setJsonError(""); return; }
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed.title) form.setValue("title", parsed.title);
+      if (parsed.description) form.setValue("description", parsed.description);
+      if (parsed.location) form.setValue("location", parsed.location);
+      if (parsed.mapsQuery) form.setValue("mapsQuery", parsed.mapsQuery);
+      setJsonError("");
+      if (parsed.mapsQuery) {
+        navigator.clipboard.writeText(parsed.mapsQuery).catch(() => {});
+      }
+    } catch {
+      setJsonError("JSON inválido");
+    }
+  }
+
   const form = useForm<StopFormValues>({
     resolver: zodResolver(stopSchema),
     defaultValues: {
       title: defaultValues?.title ?? "",
       description: defaultValues?.description ?? "",
       location: defaultValues?.location ?? "",
+      mapsQuery: defaultValues?.mapsQuery ?? "",
       time: defaultValues?.time ?? "",
       imageUrl: defaultValues?.imageUrl ?? "",
       date: defaultValues?.date ?? "",
@@ -56,6 +81,16 @@ export function StopForm({ onSubmit, isSubmitting, defaultValues, submitLabel, t
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-muted-foreground">Pegar JSON (autorellenado temporal)</label>
+          <textarea
+            className="w-full rounded-md border bg-muted/40 px-3 py-2 text-xs font-mono resize-none h-16 focus:outline-none focus:ring-1 focus:ring-ring"
+            placeholder='{"title":"...","description":"...","location":"...","mapsQuery":"..."}'
+            value={jsonInput}
+            onChange={handleJsonPaste}
+          />
+          {jsonError && <p className="text-xs text-destructive">{jsonError}</p>}
+        </div>
         <FormField
           control={form.control}
           name="title"
@@ -101,6 +136,22 @@ export function StopForm({ onSubmit, isSubmitting, defaultValues, submitLabel, t
 
           <FormField
             control={form.control}
+            name="mapsQuery"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Búsqueda en Maps (opcional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ej: Cadillac Ranch, Amarillo, TX" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
             name="time"
             render={({ field }) => (
               <FormItem>
@@ -112,9 +163,7 @@ export function StopForm({ onSubmit, isSubmitting, defaultValues, submitLabel, t
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="date"

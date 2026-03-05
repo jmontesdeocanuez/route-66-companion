@@ -8,7 +8,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, description, location, time, imageUrl } = body;
+    const { title, description, location, mapsQuery, time, imageUrl } = body;
 
     if (!title) {
       return NextResponse.json({ error: "title is required" }, { status: 400 });
@@ -20,6 +20,7 @@ export async function PUT(
         title,
         description: description || null,
         location: location || null,
+        mapsQuery: mapsQuery || null,
         time: time || null,
         imageUrl: imageUrl || null,
       },
