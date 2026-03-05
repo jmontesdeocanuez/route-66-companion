@@ -112,6 +112,7 @@ model Stop {
   title       String
   description String?
   location    String?
+  mapsQuery   String?
   time        String?
   imageUrl    String?
 
@@ -135,8 +136,9 @@ model Excursion {
   nonRefundable Boolean  @default(false)
   sortOrder     Int      @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  itineraryItems ItineraryItem[]
 }
 
 model ItineraryItem {
@@ -145,14 +147,17 @@ model ItineraryItem {
   sortOrder Int      @default(0)
   completed Boolean  @default(false)
 
-  type      String
-  flightId  String?
-  hotelId   String?
-  stopId    String?
+  type        String
+  noteText    String?
+  flightId    String?
+  hotelId     String?
+  stopId      String?
+  excursionId String?
 
-  flight    Flight? @relation(fields: [flightId], references: [id])
-  hotel     Hotel?  @relation(fields: [hotelId], references: [id])
-  stop      Stop?   @relation(fields: [stopId], references: [id], onDelete: Cascade)
+  flight    Flight?    @relation(fields: [flightId], references: [id])
+  hotel     Hotel?     @relation(fields: [hotelId], references: [id])
+  stop      Stop?      @relation(fields: [stopId], references: [id], onDelete: Cascade)
+  excursion Excursion? @relation(fields: [excursionId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

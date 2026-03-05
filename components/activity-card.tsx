@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, MapPin, Info, AlertTriangle } from "lucide-react";
+import { Calendar, Clock, Users, MapPin, Info, AlertTriangle, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export interface Activity {
@@ -103,7 +103,16 @@ export function ActivityCard({ activity, editTrigger }: { activity: Activity; ed
               {activity.meetingPoint && (
                 <div className="flex items-start gap-2.5 text-sm">
                   <MapPin className="size-4 shrink-0 mt-0.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{activity.meetingPoint}</span>
+                  <span className="text-muted-foreground flex-1">{activity.meetingPoint}</span>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.meetingPoint)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <ExternalLink className="size-3" />
+                    Maps
+                  </a>
                 </div>
               )}
             </div>

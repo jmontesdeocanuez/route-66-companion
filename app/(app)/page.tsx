@@ -6,11 +6,12 @@ import { prisma } from "@/lib/prisma";
 import { startOfDay } from "date-fns";
 
 export default async function Home() {
-  const [session, tripConfig, flights, hotels] = await Promise.all([
+  const [session, tripConfig, flights, hotels, excursions] = await Promise.all([
     getSession(),
     getTripConfig(),
     prisma.flight.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.hotel.findMany({ orderBy: { checkIn: "asc" } }),
+    prisma.excursion.findMany({ orderBy: { date: "asc" } }),
   ]);
 
   // Determine the default day to show: today if within trip, otherwise trip start
@@ -28,7 +29,7 @@ export default async function Home() {
     where: {
       date: { gte: defaultDate, lt: nextDay },
     },
-    include: { flight: true, hotel: true, stop: true },
+    include: { flight: true, hotel: true, stop: true, excursion: true },
     orderBy: { sortOrder: "asc" },
   });
 
@@ -48,6 +49,7 @@ export default async function Home() {
           initialDate={defaultDate}
           flights={flights}
           hotels={hotels}
+          excursions={excursions}
         />
       </div>
     </main>

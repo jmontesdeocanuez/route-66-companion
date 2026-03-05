@@ -1,4 +1,4 @@
-import { Plane, Calendar, Clock, Users } from "lucide-react";
+import { Plane, Calendar, Clock, Users, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export interface Flight {
@@ -37,6 +37,8 @@ interface FlightCardProps {
 }
 
 export function FlightCard({ flight, editTrigger }: FlightCardProps) {
+  const destinationMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${flight.destinationCode} ${flight.destinationCity} airport`)}`;
+
   return (
     <Card className="overflow-hidden p-0 gap-0">
       {/* Header */}
@@ -60,6 +62,15 @@ export function FlightCard({ flight, editTrigger }: FlightCardProps) {
             {editTrigger}
           </div>
         </div>
+        <a
+          href={destinationMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium text-primary-foreground hover:bg-primary-foreground/25 transition-colors"
+        >
+          <ExternalLink className="size-3" />
+          Aeropuerto destino en Maps
+        </a>
       </div>
 
       {/* Body */}

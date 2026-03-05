@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         flight: true,
         hotel: true,
         stop: true,
+        excursion: true,
       },
       orderBy: { sortOrder: "asc" },
     });
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { date, type, flightId, hotelId, stopId, stop } = body;
+    const { date, type, noteText, flightId, hotelId, stopId, excursionId, stop } = body;
 
     if (!date || !type) {
       return NextResponse.json({ error: "date and type are required" }, { status: 400 });
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
           title: stop.title,
           description: stop.description || null,
           location: stop.location || null,
+          mapsQuery: stop.mapsQuery || null,
           time: stop.time || null,
           imageUrl: stop.imageUrl || null,
         },
@@ -74,14 +76,17 @@ export async function POST(request: NextRequest) {
         date: itemDate,
         type,
         sortOrder: nextSortOrder,
+        noteText: type === "note" ? (noteText || null) : null,
         flightId: type === "flight" ? flightId : null,
         hotelId: type === "hotel" ? hotelId : null,
         stopId: type === "stop" ? resolvedStopId : null,
+        excursionId: type === "excursion" ? excursionId : null,
       },
       include: {
         flight: true,
         hotel: true,
         stop: true,
+        excursion: true,
       },
     });
 

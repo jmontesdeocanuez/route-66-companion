@@ -1,6 +1,6 @@
-import type { Flight, Hotel, Stop } from "@/app/generated/prisma/client";
+import type { Flight, Hotel, Stop, Excursion } from "@/app/generated/prisma/client";
 
-export type ItineraryItemType = "flight" | "hotel" | "stop";
+export type ItineraryItemType = "flight" | "hotel" | "stop" | "excursion" | "note";
 
 export interface ItineraryItemData {
   id: string;
@@ -8,12 +8,15 @@ export interface ItineraryItemData {
   sortOrder: number;
   completed: boolean;
   type: string;
+  noteText: string | null;
   flightId: string | null;
   hotelId: string | null;
   stopId: string | null;
+  excursionId: string | null;
   flight: Flight | null;
   hotel: Hotel | null;
   stop: Stop | null;
+  excursion: Excursion | null;
   createdAt: Date | string;
   updatedAt: Date | string;
 }
