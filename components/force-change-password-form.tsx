@@ -57,7 +57,7 @@ export function ForceChangePasswordForm() {
     });
 
     if (response.ok) {
-      router.push("/");
+      router.push("/onboarding");
       router.refresh();
     } else {
       const data = await response.json();

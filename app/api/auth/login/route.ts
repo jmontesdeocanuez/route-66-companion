@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     session.email = user.email;
     session.isLoggedIn = true;
     session.mustChangePassword = user.mustChangePassword;
+    session.onboardingCompleted = user.onboardingCompleted;
 
     await session.save();
 

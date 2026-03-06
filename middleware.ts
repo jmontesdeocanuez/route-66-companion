@@ -11,6 +11,15 @@ const CHANGE_PASSWORD_PATHS = [
   "/api/auth/logout",
 ];
 
+// Paths accessible while onboardingCompleted is false (besides PUBLIC_PATHS)
+const ONBOARDING_PATHS = [
+  "/onboarding",
+  "/api/user/profile",
+  "/api/user/onboarding",
+  "/api/user/avatar",
+  "/api/auth/logout",
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -29,6 +38,11 @@ export async function middleware(request: NextRequest) {
     const isAllowed = CHANGE_PASSWORD_PATHS.some((p) => pathname.startsWith(p));
     if (!isAllowed) {
       return NextResponse.redirect(new URL("/cambiar-contrasena", request.url));
+    }
+  } else if (!session.onboardingCompleted) {
+    const isAllowed = ONBOARDING_PATHS.some((p) => pathname.startsWith(p));
+    if (!isAllowed) {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
     }
   }
 
