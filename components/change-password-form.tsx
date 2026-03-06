@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v3";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,6 +42,9 @@ export function ChangePasswordForm() {
   const [open, setOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const form = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -112,12 +116,24 @@ export function ChangePasswordForm() {
                   <FormItem>
                     <FormLabel>Contraseña actual</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="current-password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showCurrent ? "text" : "password"}
+                          placeholder="••••••••"
+                          autoComplete="current-password"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrent((v) => !v)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                          tabIndex={-1}
+                          aria-label={showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                          {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -130,12 +146,24 @@ export function ChangePasswordForm() {
                   <FormItem>
                     <FormLabel>Nueva contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showNew ? "text" : "password"}
+                          placeholder="••••••••"
+                          autoComplete="new-password"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNew((v) => !v)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                          tabIndex={-1}
+                          aria-label={showNew ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                          {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,12 +176,24 @@ export function ChangePasswordForm() {
                   <FormItem>
                     <FormLabel>Confirmar nueva contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showConfirm ? "text" : "password"}
+                          placeholder="••••••••"
+                          autoComplete="new-password"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirm((v) => !v)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                          tabIndex={-1}
+                          aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                          {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
