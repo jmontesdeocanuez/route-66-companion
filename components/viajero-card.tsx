@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, AlertTriangle, Globe, UserRound, KeyRound, Loader2, Check } from "lucide-react";
+import { Phone, AlertTriangle, UserRound, KeyRound, Loader2, Check, Mail } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,6 @@ export interface Viajero {
   avatar: string | null;
   nickname: string | null;
   bio: string | null;
-  nationality: string | null;
   phone: string | null;
   emergencyContact: string | null;
   dietaryRestrictions: string | null;
@@ -49,8 +48,7 @@ export function ViajeroCard({ viajero, isAdmin }: { viajero: Viajero; isAdmin?: 
   }
 
   const displayName = viajero.displayName ?? viajero.name;
-  const hasContact = viajero.phone || viajero.emergencyContact;
-  const hasInfo = viajero.nationality;
+  const hasContact = viajero.phone || viajero.emergencyContact || viajero.email;
   const hasRestrictions = viajero.dietaryRestrictions || viajero.allergies;
 
   return (
@@ -89,6 +87,15 @@ export function ViajeroCard({ viajero, isAdmin }: { viajero: Viajero; isAdmin?: 
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Contacto
             </p>
+            <div className="flex items-center gap-2.5 text-sm">
+              <Mail className="size-4 shrink-0 text-muted-foreground" />
+              <a
+                href={`mailto:${viajero.email}`}
+                className="font-medium hover:underline"
+              >
+                {viajero.email}
+              </a>
+            </div>
             {viajero.phone && (
               <div className="flex items-center gap-2.5 text-sm">
                 <Phone className="size-4 shrink-0 text-muted-foreground" />
@@ -112,28 +119,11 @@ export function ViajeroCard({ viajero, isAdmin }: { viajero: Viajero; isAdmin?: 
           </div>
         )}
 
-        {/* Información del viaje */}
-        {hasInfo && (
-          <>
-            {hasContact && <div className="border-t" />}
-            <div className="space-y-2.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Información
-              </p>
-              {viajero.nationality && (
-                <div className="flex items-center gap-2.5 text-sm">
-                  <Globe className="size-4 shrink-0 text-muted-foreground" />
-                  <span className="font-medium">{viajero.nationality}</span>
-                </div>
-              )}
-            </div>
-          </>
-        )}
 
         {/* Restricciones alimentarias / alergias */}
         {hasRestrictions && (
           <>
-            {(hasContact || hasInfo) && <div className="border-t" />}
+            {hasContact && <div className="border-t" />}
             <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-4 py-3 space-y-2">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-500" />
@@ -155,7 +145,7 @@ export function ViajeroCard({ viajero, isAdmin }: { viajero: Viajero; isAdmin?: 
         )}
 
         {/* Fallback si no hay ningún dato adicional */}
-        {!hasContact && !hasInfo && !hasRestrictions && (
+        {!hasContact && !hasRestrictions && (
           <p className="text-sm text-muted-foreground italic">Sin información adicional</p>
         )}
 

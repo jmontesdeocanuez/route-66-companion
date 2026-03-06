@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AvatarUpload } from "@/components/avatar-upload";
 import {
   Form,
   FormControl,
@@ -27,7 +28,6 @@ const profileSchema = z.object({
   displayName: z.string().max(30, "Máximo 30 caracteres").optional().or(z.literal("")),
   nickname: z.string().max(30, "Máximo 30 caracteres").optional().or(z.literal("")),
   bio: z.string().max(200, "Máximo 200 caracteres").optional().or(z.literal("")),
-  nationality: z.string().max(50, "Máximo 50 caracteres").optional().or(z.literal("")),
   phone: z.string().max(20, "Máximo 20 caracteres").optional().or(z.literal("")),
   emergencyContact: z.string().max(100, "Máximo 100 caracteres").optional().or(z.literal("")),
   dietaryRestrictions: z.string().max(100, "Máximo 100 caracteres").optional().or(z.literal("")),
@@ -38,6 +38,7 @@ type ProfileValues = z.infer<typeof profileSchema>;
 
 interface OnboardingScreenProps {
   userName: string;
+  avatar: string | null;
   initialProfile: ProfileValues;
 }
 
@@ -54,7 +55,7 @@ function Route66Shield() {
   );
 }
 
-export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenProps) {
+export function OnboardingScreen({ userName, avatar, initialProfile }: OnboardingScreenProps) {
   const [step, setStep] = useState<Step>("welcome");
   const [visibleLines, setVisibleLines] = useState(0);
   const [showContinue, setShowContinue] = useState(false);
@@ -69,7 +70,7 @@ export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenP
     { text: "Estás a punto de iniciar el viaje que todos llevamos soñando.", muted: true },
     { text: "La Ruta 66. La Madre de todas las carreteras.", muted: false },
     { text: "4.000 km de asfalto, historia y libertad.", muted: true },
-    { text: "Antes de arrancar, cuéntanos un poco sobre ti.", muted: false },
+    { text: "Antes de arrancar, confírmame estos detalles.", muted: false },
   ];
 
   const celebrationLines = [
@@ -110,7 +111,6 @@ export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenP
       displayName: initialProfile.displayName ?? "",
       nickname: initialProfile.nickname ?? "",
       bio: initialProfile.bio ?? "",
-      nationality: initialProfile.nationality ?? "",
       phone: initialProfile.phone ?? "",
       emergencyContact: initialProfile.emergencyContact ?? "",
       dietaryRestrictions: initialProfile.dietaryRestrictions ?? "",
@@ -180,7 +180,8 @@ export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenP
       {/* ── Phase 2: Profile ── */}
       {step === "profile" && (
         <Card className="w-full max-w-sm max-h-[90vh] overflow-y-auto animate-welcome-greeting">
-          <CardHeader>
+          <CardHeader className="items-center text-center">
+            <AvatarUpload name={userName} avatar={avatar} size="lg" />
             <CardTitle className="text-2xl">Cuéntanos sobre ti</CardTitle>
             <CardDescription>
               Modifica a tu gusto — siempre podrás editarlo desde tu perfil.
@@ -223,19 +224,6 @@ export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenP
                       <FormLabel>Sobre mí</FormLabel>
                       <FormControl>
                         <Input placeholder="Una frase sobre ti" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="nationality"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nacionalidad</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: Española" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

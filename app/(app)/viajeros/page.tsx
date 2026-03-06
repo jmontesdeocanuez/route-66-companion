@@ -27,7 +27,6 @@ export default async function ViajerosPage() {
       avatar: true,
       nickname: true,
       bio: true,
-      nationality: true,
       phone: true,
       emergencyContact: true,
       dietaryRestrictions: true,

@@ -27,7 +27,6 @@ const profileSchema = z.object({
   displayName: z.string().max(30, "Máximo 30 caracteres").optional().or(z.literal("")),
   nickname: z.string().max(30, "Máximo 30 caracteres").optional().or(z.literal("")),
   bio: z.string().max(200, "Máximo 200 caracteres").optional().or(z.literal("")),
-  nationality: z.string().max(50, "Máximo 50 caracteres").optional().or(z.literal("")),
   phone: z.string().max(20, "Máximo 20 caracteres").optional().or(z.literal("")),
   emergencyContact: z.string().max(100, "Máximo 100 caracteres").optional().or(z.literal("")),
   dietaryRestrictions: z.string().max(100, "Máximo 100 caracteres").optional().or(z.literal("")),
@@ -52,7 +51,6 @@ export function EditProfileForm({ initialValues }: EditProfileFormProps) {
       displayName: initialValues.displayName ?? "",
       nickname: initialValues.nickname ?? "",
       bio: initialValues.bio ?? "",
-      nationality: initialValues.nationality ?? "",
       phone: initialValues.phone ?? "",
       emergencyContact: initialValues.emergencyContact ?? "",
       dietaryRestrictions: initialValues.dietaryRestrictions ?? "",
@@ -144,19 +142,6 @@ export function EditProfileForm({ initialValues }: EditProfileFormProps) {
                     <FormLabel>Sobre mí</FormLabel>
                     <FormControl>
                       <Input placeholder="Una frase sobre ti" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="nationality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nacionalidad</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ej: Española" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
