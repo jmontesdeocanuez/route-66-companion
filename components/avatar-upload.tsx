@@ -16,6 +16,7 @@ import {
 interface AvatarUploadProps {
   name: string;
   avatar: string | null;
+  size?: "md" | "lg";
 }
 
 function getInitials(name: string): string {
@@ -61,7 +62,10 @@ async function getCroppedBlob(imageSrc: string, croppedAreaPixels: Area): Promis
   });
 }
 
-export function AvatarUpload({ name, avatar: initialAvatar }: AvatarUploadProps) {
+export function AvatarUpload({ name, avatar: initialAvatar, size = "md" }: AvatarUploadProps) {
+  const sizeClass = size === "lg" ? "size-28" : "size-20";
+  const imgSizeClass = size === "lg" ? "size-28" : "size-20";
+  const textSizeClass = size === "lg" ? "text-3xl" : "text-2xl";
   const [avatar, setAvatar] = useState(initialAvatar);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,14 +151,14 @@ export function AvatarUpload({ name, avatar: initialAvatar }: AvatarUploadProps)
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="group relative flex size-20 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold select-none overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className={`group relative flex ${sizeClass} items-center justify-center rounded-full bg-primary text-primary-foreground ${textSizeClass} font-bold select-none overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
           aria-label="Cambiar foto de perfil"
         >
           {uploading ? (
             <Loader2 className="size-7 animate-spin" />
           ) : avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatar} alt={name} className="size-20 object-cover" />
+            <img src={avatar} alt={name} className={`${imgSizeClass} object-cover`} />
           ) : (
             getInitials(name)
           )}

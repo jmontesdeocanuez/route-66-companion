@@ -21,6 +21,7 @@ export default async function OnboardingPage() {
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     select: {
+      avatar: true,
       displayName: true,
       nickname: true,
       bio: true,
@@ -35,6 +36,7 @@ export default async function OnboardingPage() {
   return (
     <OnboardingScreen
       userName={session.name}
+      avatar={user?.avatar ?? null}
       initialProfile={{
         displayName: user?.displayName ?? "",
         nickname: user?.nickname ?? "",

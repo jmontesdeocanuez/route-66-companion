@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AvatarUpload } from "@/components/avatar-upload";
 import {
   Form,
   FormControl,
@@ -38,6 +39,7 @@ type ProfileValues = z.infer<typeof profileSchema>;
 
 interface OnboardingScreenProps {
   userName: string;
+  avatar: string | null;
   initialProfile: ProfileValues;
 }
 
@@ -54,7 +56,7 @@ function Route66Shield() {
   );
 }
 
-export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenProps) {
+export function OnboardingScreen({ userName, avatar, initialProfile }: OnboardingScreenProps) {
   const [step, setStep] = useState<Step>("welcome");
   const [visibleLines, setVisibleLines] = useState(0);
   const [showContinue, setShowContinue] = useState(false);
@@ -180,7 +182,8 @@ export function OnboardingScreen({ userName, initialProfile }: OnboardingScreenP
       {/* ── Phase 2: Profile ── */}
       {step === "profile" && (
         <Card className="w-full max-w-sm max-h-[90vh] overflow-y-auto animate-welcome-greeting">
-          <CardHeader>
+          <CardHeader className="items-center text-center">
+            <AvatarUpload name={userName} avatar={avatar} size="lg" />
             <CardTitle className="text-2xl">Cuéntanos sobre ti</CardTitle>
             <CardDescription>
               Modifica a tu gusto — siempre podrás editarlo desde tu perfil.
