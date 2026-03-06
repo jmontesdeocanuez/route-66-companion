@@ -8,6 +8,7 @@ export interface SessionData {
   email: string;
   isLoggedIn: boolean;
   mustChangePassword: boolean;
+  onboardingCompleted: boolean;
 }
 
 export const sessionOptions = {
